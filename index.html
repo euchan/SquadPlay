@@ -113,6 +113,11 @@
       color: white; border-color: color-mix(in oklab, var(--accent) 70%, var(--border));
       box-shadow: 0 10px 25px color-mix(in oklab, var(--accent) 30%, transparent);
     }
+    .btn.secondary {
+      background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 100%, transparent) 0%, color-mix(in oklab, var(--accent-weak) 72%, transparent) 100%);
+      color: white; border-color: color-mix(in oklab, var(--accent) 70%, var(--border));
+      box-shadow: 0 10px 25px color-mix(in oklab, var(--accent) 30%, transparent);
+    }
     .btn.ghost { background: var(--bg-2); }
     .btn.danger { border-color: color-mix(in oklab, var(--danger) 60%, var(--border)); color: var(--danger); }
     .btn .badge {
@@ -354,24 +359,50 @@
     .accent {
       color: var(--accent);
     }
+
+    /* Botones compactos: icono + etiqueta */
+    .btn-ico { font-size: 18px; line-height: 1; }
+    .btn-label { display: inline; }
+    .btn-compact { gap: 6px; }
+
+    /* Solo en móvil: ocultar etiqueta de botones compactos y enfatizar marca */
+    @media (max-width: 520px) {
+    .btn-compact .btn-label { display: none; }
+
+    /* Marca protagonista */
+    .brand .logo { width: 44px; height: 44px; font-size: 22px; }
+    .brand .hint { display: none; } /* ocultamos el subtítulo en móvil */
+    .appbar .row { align-items: center; }
+
+    /* Reducir ruido en fichas (oculta id p1, p2...) */
+    .player-chip .muted.mono { display: none; }
+    }
   </style>
 </head>
 <body>
   <header class="appbar">
     <div class="row">
       <div class="brand">
+        <button class="btn btn-compact" id="btnInstall" title="Instalar" aria-label="Instalar">
+            <span class="btn-ico">⬇️</span><span class="btn-label">Instalar</span>
+        </button>
+        <button class="btn btn-compact" id="btnExport" title="Exportar JSON" aria-label="Exportar JSON">
+            <span class="btn-ico">💾</span><span class="btn-label">Exportar JSON</span>
+        </button>
         <div class="logo">🎮</div>
         <div>
           <div style="font-size:15px; font-weight:900;">SquadPlay</div>
           <div class="hint">Planificador de partidas entre amigos</div>
         </div>
       </div>
-      <div class="actions">
-        <button class="btn" id="btnTheme" title="Cambiar tema">🌓 Tema</button>
-        <button class="btn" id="btnDashboard">📊 Dashboard</button>
-        <button class="btn" id="btnInstall" style="display:none;">⬇️ Instalar</button>
-        <button class="btn primary" id="btnExport">💾 Exportar JSON</button>
-      </div>
+        <button class="btn btn-compact" id="btnDashboard" title="Dashboard" aria-label="Dashboard">
+            <span class="btn-ico">📊</span><span class="btn-label">Dashboard</span>
+        </button>
+        <div class="actions">
+        <button class="btn btn-compact" id="btnTheme" title="Cambiar tema" aria-label="Cambiar tema">
+            <span class="btn-ico">🌓</span><span class="btn-label">Tema</span>
+        </button>
+        </div>
     </div>
   </header>
 
