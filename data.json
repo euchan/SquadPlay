@@ -1,0 +1,233 @@
+{
+  "meta": {
+    "version": 1,
+    "lastUpdated": "2025-08-12T08:05:53.413Z",
+    "source": "default",
+    "appVersion": 1
+  },
+  "players": [
+    {
+      "id": "p1",
+      "name": "Alex",
+      "color": "#34a853",
+      "createdAt": "2025-08-12T08:05:53.412Z",
+      "updatedAt": "2025-08-12T08:05:53.412Z"
+    },
+    {
+      "id": "p2",
+      "name": "Bea",
+      "color": "#4285f4",
+      "createdAt": "2025-08-12T08:05:53.412Z",
+      "updatedAt": "2025-08-12T08:05:53.412Z"
+    },
+    {
+      "id": "p3",
+      "name": "Carlos",
+      "color": "#fbbc05",
+      "createdAt": "2025-08-12T08:05:53.412Z",
+      "updatedAt": "2025-08-12T08:05:53.412Z"
+    },
+    {
+      "id": "p4",
+      "name": "Dani",
+      "color": "#ab47bc",
+      "createdAt": "2025-08-12T08:05:53.412Z",
+      "updatedAt": "2025-08-12T08:05:53.412Z"
+    },
+    {
+      "id": "p5",
+      "name": "Eva",
+      "color": "#ef5350",
+      "createdAt": "2025-08-12T08:05:53.412Z",
+      "updatedAt": "2025-08-12T08:05:53.413Z"
+    }
+  ],
+  "games": [
+    {
+      "id": "g1",
+      "title": "Halo Infinite",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p2",
+        "p3"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-12T08:05:53.413Z",
+      "updatedAt": "2025-08-12T08:05:53.413Z"
+    },
+    {
+      "id": "g2",
+      "title": "Overcooked! 2",
+      "platform": "Switch",
+      "players": [
+        "p2",
+        "p4"
+      ],
+      "completed": true,
+      "completedAt": "2025-07-03T08:05:53.413Z",
+      "addedAt": "2025-04-14T08:05:53.413Z",
+      "updatedAt": "2025-07-03T08:05:53.413Z"
+    },
+    {
+      "id": "g3",
+      "title": "Fortnite",
+      "platform": "PC",
+      "players": [
+        "p1",
+        "p3",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-06-13T08:05:53.413Z",
+      "updatedAt": "2025-07-28T08:05:53.413Z"
+    },
+    {
+      "id": "g4",
+      "title": "Rocket League",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p2"
+      ],
+      "completed": true,
+      "completedAt": "2025-07-28T08:05:53.413Z",
+      "addedAt": "2025-01-24T08:05:53.413Z",
+      "updatedAt": "2025-07-28T08:05:53.413Z"
+    },
+    {
+      "id": "g5",
+      "title": "It Takes Two",
+      "platform": "Xbox",
+      "players": [
+        "p3",
+        "p4"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-07-23T08:05:53.413Z",
+      "updatedAt": "2025-08-10T08:05:53.413Z"
+    },
+    {
+      "id": "g6",
+      "title": "Sea of Thieves",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p2",
+        "p3",
+        "p4"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-07T08:05:53.413Z",
+      "updatedAt": "2025-08-11T08:05:53.413Z"
+    },
+    {
+      "id": "g7",
+      "title": "Diablo IV",
+      "platform": "PC",
+      "players": [
+        "p2",
+        "p3",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-07-25T08:05:53.413Z",
+      "updatedAt": "2025-08-09T08:05:53.413Z"
+    },
+    {
+      "id": "g8",
+      "title": "Minecraft",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p4",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-05-04T08:05:53.413Z",
+      "updatedAt": "2025-08-09T08:05:53.413Z"
+    },
+    {
+      "id": "g9",
+      "title": "Destiny 2",
+      "platform": "PlayStation",
+      "players": [
+        "p5"
+      ],
+      "completed": true,
+      "completedAt": "2025-05-29T08:05:53.413Z",
+      "addedAt": "2024-07-08T08:05:53.413Z",
+      "updatedAt": "2025-05-29T08:05:53.413Z"
+    }
+  ],
+  "stats": {
+    "totals": {
+      "totalGames": 9,
+      "completedGames": 3,
+      "activeGames": 6
+    },
+    "byPlatform": {
+      "Xbox": 5,
+      "Switch": 1,
+      "PC": 2,
+      "PlayStation": 1
+    },
+    "combos": {
+      "p1|p2|p3": 1,
+      "p2|p4": 1,
+      "p1|p3|p5": 1,
+      "p1|p2": 1,
+      "p3|p4": 1,
+      "p1|p2|p3|p4": 1,
+      "p2|p3|p5": 1,
+      "p1|p4|p5": 1,
+      "p5": 1
+    },
+    "activeByPlayer": {
+      "p1": 4,
+      "p2": 3,
+      "p3": 5,
+      "p5": 3,
+      "p4": 3
+    },
+    "completedByMonth": [
+      {
+        "ym": "2025-02",
+        "label": "mar 25",
+        "count": 0
+      },
+      {
+        "ym": "2025-03",
+        "label": "abr 25",
+        "count": 0
+      },
+      {
+        "ym": "2025-04",
+        "label": "may 25",
+        "count": 0
+      },
+      {
+        "ym": "2025-05",
+        "label": "jun 25",
+        "count": 1
+      },
+      {
+        "ym": "2025-06",
+        "label": "jul 25",
+        "count": 0
+      },
+      {
+        "ym": "2025-07",
+        "label": "ago 25",
+        "count": 2
+      }
+    ],
+    "maxCompletedInMonth": 2
+  }
+}

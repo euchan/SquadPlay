@@ -153,8 +153,32 @@
     }
     .player-name { font-weight: 700; }
     .player-chip .muted { color: var(--muted); font-size: 12px; }
-    .player-chip.selected { border-color: color-mix(in oklab, var(--accent) 50%, var(--border)); box-shadow: 0 10px 24px color-mix(in oklab, var(--accent) 22%, transparent); }
     .player-chip.selected .player-name { color: var(--accent); }
+    /* Feedback de selección más claro */
+    .player-chip { position: relative; }
+    .player-chip.selected {
+    border-color: color-mix(in oklab, var(--accent) 60%, var(--border));
+    background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 8%, transparent), transparent);
+    box-shadow: 0 12px 28px color-mix(in oklab, var(--accent) 28%, transparent);
+    }
+    .player-chip.selected .player-name { color: var(--accent); }
+    .player-chip.selected .player-avatar {
+    outline: 3px solid color-mix(in oklab, var(--accent) 45%, transparent);
+    }
+
+    /* Check a la derecha cuando está seleccionado */
+    .player-chip::after {
+    content: '';
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    width: 0; height: 0;
+    }
+    .player-chip.selected::after {
+    content: '✓';
+    width: 22px; height: 22px; border-radius: 999px;
+    background: var(--accent); color: #fff; display: grid; place-items: center;
+    font-weight: 900;
+    box-shadow: 0 8px 20px color-mix(in oklab, var(--accent) 40%, transparent);
+    }   
 
     .chip {
       display: inline-flex; align-items: center; gap: 6px;
@@ -674,6 +698,7 @@
           // evitar doble toggle si click en input
           if (e.target.tagName.toLowerCase() !== 'input') input.checked = !input.checked;
           togglePlayerSelection(p.id, input.checked);
+          el.classList.toggle('selected', input.checked);
           e.preventDefault();
         });
         wrap.appendChild(el);
@@ -1016,33 +1041,41 @@
     });
 
     // CRUD: Juegos
-    function openGameModal(gameId=null, preselectedPlayers=null) {
-      state.editing.gameId = gameId;
-      $('#gameModalTitle').textContent = gameId ? 'Editar juego' : 'Añadir juego';
-      // rellenar fieldset de jugadores
-      const container = $('#gamePlayersField');
-      container.innerHTML = '';
-      for (const p of state.data.players.slice().sort((a,b)=> a.name.localeCompare(b.name,'es',{sensitivity:'base'}))) {
-        const row = document.createElement('label');
-        row.className = 'player-chip';
-        row.style.padding = '8px';
-        const checked = gameId ? gameById(gameId)?.players.includes(p.id) :
-              (preselectedPlayers ? preselectedPlayers.includes(p.id) : state.selectedPlayers.has(p.id));
-        row.innerHTML = `
-          <input type="checkbox" data-id="${p.id}" ${checked ? 'checked':''} />
-          <div class="player-avatar" style="width:28px; height:28px; border-radius:8px; background:${p.color}">${shortName(p.name)}</div>
-          <div class="player-name">${p.name}</div>
-        `;
-        container.appendChild(row);
-      }
-      // campos de juego
-      const g = gameId ? gameById(gameId) : null;
-      $('#gameTitle').value = g?.title || '';
-      $('#gamePlatform').value = g?.platform || 'Xbox';
-      $('#gameCompleted').checked = Boolean(g?.completed);
+function openGameModal(gameId=null, preselectedPlayers=null) {
+  state.editing.gameId = gameId;
+  $('#gameModalTitle').textContent = gameId ? 'Editar juego' : 'Añadir juego';
 
-      openModal('#modalGame');
-    }
+  // Rellenar lista de jugadores con feedback visual
+  const container = $('#gamePlayersField');
+  container.innerHTML = '';
+  const g = gameId ? gameById(gameId) : null;
+  const current = gameId ? new Set(g.players) : new Set(preselectedPlayers || Array.from(state.selectedPlayers));
+
+  for (const p of state.data.players.slice().sort((a,b)=> a.name.localeCompare(b.name,'es',{sensitivity:'base'}))) {
+    const checked = current.has(p.id);
+    const row = document.createElement('label');
+    row.className = 'player-chip' + (checked ? ' selected' : '');
+    row.style.padding = '8px';
+    row.innerHTML = `
+      <input type="checkbox" data-id="${p.id}" ${checked ? 'checked':''} />
+      <div class="player-avatar" style="width:28px; height:28px; border-radius:8px; background:${p.color}">${shortName(p.name)}</div>
+      <div class="player-name">${p.name}</div>
+    `;
+    row.addEventListener('click', (e) => {
+      const input = row.querySelector('input');
+      if (e.target.tagName.toLowerCase() !== 'input') input.checked = !input.checked;
+      row.classList.toggle('selected', input.checked);
+      e.preventDefault();
+    });
+    container.appendChild(row);
+  }
+
+  // Campos del juego
+  $('#gameTitle').value = g?.title || '';
+  $('#gamePlatform').value = g?.platform || 'Xbox';
+  $('#gameCompleted').checked = Boolean(g?.completed);
+  openModal('#modalGame');
+}
     $('#gameSave').addEventListener('click', () => {
       const title = $('#gameTitle').value.trim();
       const platform = $('#gamePlatform').value;
