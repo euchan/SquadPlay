@@ -1,45 +1,45 @@
 {
   "meta": {
-    "version": 1,
-    "lastUpdated": "2025-08-12T08:05:53.413Z",
-    "source": "default",
+    "version": 14,
+    "lastUpdated": "2025-08-12T09:14:17.042Z",
+    "source": "data.json",
     "appVersion": 1
   },
   "players": [
     {
       "id": "p1",
-      "name": "Alex",
+      "name": "EuChan",
       "color": "#34a853",
       "createdAt": "2025-08-12T08:05:53.412Z",
-      "updatedAt": "2025-08-12T08:05:53.412Z"
+      "updatedAt": "2025-08-12T09:09:33.461Z"
     },
     {
       "id": "p2",
-      "name": "Bea",
+      "name": "FranChan",
       "color": "#4285f4",
       "createdAt": "2025-08-12T08:05:53.412Z",
-      "updatedAt": "2025-08-12T08:05:53.412Z"
+      "updatedAt": "2025-08-12T09:09:50.268Z"
     },
     {
       "id": "p3",
-      "name": "Carlos",
+      "name": "Josema",
       "color": "#fbbc05",
       "createdAt": "2025-08-12T08:05:53.412Z",
-      "updatedAt": "2025-08-12T08:05:53.412Z"
+      "updatedAt": "2025-08-12T09:10:14.595Z"
     },
     {
       "id": "p4",
-      "name": "Dani",
+      "name": "Jotudo",
       "color": "#ab47bc",
       "createdAt": "2025-08-12T08:05:53.412Z",
-      "updatedAt": "2025-08-12T08:05:53.412Z"
+      "updatedAt": "2025-08-12T09:10:06.572Z"
     },
     {
       "id": "p5",
-      "name": "Eva",
+      "name": "Kiki",
       "color": "#ef5350",
       "createdAt": "2025-08-12T08:05:53.412Z",
-      "updatedAt": "2025-08-12T08:05:53.413Z"
+      "updatedAt": "2025-08-12T09:10:01.086Z"
     }
   ],
   "games": [
@@ -99,16 +99,17 @@
     },
     {
       "id": "g5",
-      "title": "It Takes Two",
+      "title": "Dead Island 2",
       "platform": "Xbox",
       "players": [
+        "p1",
         "p3",
         "p4"
       ],
       "completed": false,
       "completedAt": null,
       "addedAt": "2025-07-23T08:05:53.413Z",
-      "updatedAt": "2025-08-10T08:05:53.413Z"
+      "updatedAt": "2025-08-12T09:14:17.042Z"
     },
     {
       "id": "g6",
@@ -127,31 +128,33 @@
     },
     {
       "id": "g7",
-      "title": "Diablo IV",
+      "title": "Diablo V",
       "platform": "PC",
       "players": [
-        "p2",
+        "p1",
         "p3",
+        "p4",
         "p5"
       ],
       "completed": false,
       "completedAt": null,
       "addedAt": "2025-07-25T08:05:53.413Z",
-      "updatedAt": "2025-08-09T08:05:53.413Z"
+      "updatedAt": "2025-08-12T09:13:04.279Z"
     },
     {
       "id": "g8",
-      "title": "Minecraft",
+      "title": "WWZ",
       "platform": "Xbox",
       "players": [
         "p1",
+        "p3",
         "p4",
         "p5"
       ],
       "completed": false,
       "completedAt": null,
       "addedAt": "2025-05-04T08:05:53.413Z",
-      "updatedAt": "2025-08-09T08:05:53.413Z"
+      "updatedAt": "2025-08-12T09:13:27.869Z"
     },
     {
       "id": "g9",
@@ -164,16 +167,29 @@
       "completedAt": "2025-05-29T08:05:53.413Z",
       "addedAt": "2024-07-08T08:05:53.413Z",
       "updatedAt": "2025-05-29T08:05:53.413Z"
+    },
+    {
+      "id": "g_9rybmtejn5",
+      "title": "Sniper Elite 5",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p3"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-12T09:04:06.641Z",
+      "updatedAt": "2025-08-12T09:11:15.822Z"
     }
   ],
   "stats": {
     "totals": {
-      "totalGames": 9,
+      "totalGames": 10,
       "completedGames": 3,
-      "activeGames": 6
+      "activeGames": 7
     },
     "byPlatform": {
-      "Xbox": 5,
+      "Xbox": 6,
       "Switch": 1,
       "PC": 2,
       "PlayStation": 1
@@ -183,18 +199,18 @@
       "p2|p4": 1,
       "p1|p3|p5": 1,
       "p1|p2": 1,
-      "p3|p4": 1,
+      "p1|p3|p4": 1,
       "p1|p2|p3|p4": 1,
-      "p2|p3|p5": 1,
-      "p1|p4|p5": 1,
-      "p5": 1
+      "p1|p3|p4|p5": 2,
+      "p5": 1,
+      "p1|p3": 1
     },
     "activeByPlayer": {
-      "p1": 4,
-      "p2": 3,
-      "p3": 5,
+      "p1": 7,
+      "p2": 2,
+      "p3": 7,
       "p5": 3,
-      "p4": 3
+      "p4": 4
     },
     "completedByMonth": [
       {
