@@ -1,10 +1,19 @@
 {
   "meta": {
-    "version": 14,
-    "lastUpdated": "2025-08-12T09:14:17.042Z",
+    "version": 15,
+    "lastUpdated": "2025-08-12T10:00:00.000Z",
     "source": "data.json",
     "appVersion": 1
   },
+  "platforms": [
+    { "id": "pc", "name": "PC" },
+    { "id": "xbox", "name": "Xbox" },
+    { "id": "ps", "name": "PlayStation" },
+    { "id": "switch", "name": "Nintendo Switch" },
+    { "id": "ps3", "name": "PlayStation 3" },
+    { "id": "ps4", "name": "PlayStation 4" },
+    { "id": "ps5", "name": "PlayStation 5" }
+  ],
   "players": [
     {
       "id": "p1",
@@ -46,7 +55,7 @@
     {
       "id": "g1",
       "title": "Halo Infinite",
-      "platform": "Xbox",
+      "platform": "xbox",
       "players": [
         "p1",
         "p2",
@@ -60,7 +69,7 @@
     {
       "id": "g2",
       "title": "Overcooked! 2",
-      "platform": "Switch",
+      "platform": "switch",
       "players": [
         "p2",
         "p4"
@@ -73,7 +82,7 @@
     {
       "id": "g3",
       "title": "Fortnite",
-      "platform": "PC",
+      "platform": "pc",
       "players": [
         "p1",
         "p3",
@@ -87,7 +96,7 @@
     {
       "id": "g4",
       "title": "Rocket League",
-      "platform": "Xbox",
+      "platform": "xbox",
       "players": [
         "p1",
         "p2"
@@ -100,7 +109,7 @@
     {
       "id": "g5",
       "title": "Dead Island 2",
-      "platform": "Xbox",
+      "platform": "xbox",
       "players": [
         "p1",
         "p3",
@@ -114,7 +123,7 @@
     {
       "id": "g6",
       "title": "Sea of Thieves",
-      "platform": "Xbox",
+      "platform": "xbox",
       "players": [
         "p1",
         "p2",
@@ -129,7 +138,7 @@
     {
       "id": "g7",
       "title": "Diablo V",
-      "platform": "PC",
+      "platform": "pc",
       "players": [
         "p1",
         "p3",
@@ -144,7 +153,7 @@
     {
       "id": "g8",
       "title": "WWZ",
-      "platform": "Xbox",
+      "platform": "xbox",
       "players": [
         "p1",
         "p3",
@@ -159,7 +168,7 @@
     {
       "id": "g9",
       "title": "Destiny 2",
-      "platform": "PlayStation",
+      "platform": "ps",
       "players": [
         "p5"
       ],
@@ -171,7 +180,7 @@
     {
       "id": "g_9rybmtejn5",
       "title": "Sniper Elite 5",
-      "platform": "Xbox",
+      "platform": "xbox",
       "players": [
         "p1",
         "p3"
@@ -182,68 +191,5 @@
       "updatedAt": "2025-08-12T09:11:15.822Z"
     }
   ],
-  "stats": {
-    "totals": {
-      "totalGames": 10,
-      "completedGames": 3,
-      "activeGames": 7
-    },
-    "byPlatform": {
-      "Xbox": 6,
-      "Switch": 1,
-      "PC": 2,
-      "PlayStation": 1
-    },
-    "combos": {
-      "p1|p2|p3": 1,
-      "p2|p4": 1,
-      "p1|p3|p5": 1,
-      "p1|p2": 1,
-      "p1|p3|p4": 1,
-      "p1|p2|p3|p4": 1,
-      "p1|p3|p4|p5": 2,
-      "p5": 1,
-      "p1|p3": 1
-    },
-    "activeByPlayer": {
-      "p1": 7,
-      "p2": 2,
-      "p3": 7,
-      "p5": 3,
-      "p4": 4
-    },
-    "completedByMonth": [
-      {
-        "ym": "2025-02",
-        "label": "mar 25",
-        "count": 0
-      },
-      {
-        "ym": "2025-03",
-        "label": "abr 25",
-        "count": 0
-      },
-      {
-        "ym": "2025-04",
-        "label": "may 25",
-        "count": 0
-      },
-      {
-        "ym": "2025-05",
-        "label": "jun 25",
-        "count": 1
-      },
-      {
-        "ym": "2025-06",
-        "label": "jul 25",
-        "count": 0
-      },
-      {
-        "ym": "2025-07",
-        "label": "ago 25",
-        "count": 2
-      }
-    ],
-    "maxCompletedInMonth": 2
-  }
+  "stats": {}
 }

@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SquadPlay · Planner de partidas</title>
   <meta name="description" content="Organiza partidas con tus amigos. Filtra juegos por combinación exacta de jugadores, marca terminados y consulta estadísticas.">
+  <meta name="theme-color" content="#107C10" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <!-- Icono Apple (puedes reemplazarlo por icons/icon-192.png si lo añades localmente) -->
+  <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/192/controller.png" />
   <style>
     :root {
       --xbox: #107C10;
@@ -363,7 +369,7 @@
       <div class="actions">
         <button class="btn" id="btnTheme" title="Cambiar tema">🌓 Tema</button>
         <button class="btn" id="btnDashboard">📊 Dashboard</button>
-        <!-- <button class="btn" id="btnReset">🔁 Reset demo</button> -->
+        <button class="btn" id="btnInstall" style="display:none;">⬇️ Instalar</button>
         <button class="btn primary" id="btnExport">💾 Exportar JSON</button>
       </div>
     </div>
@@ -391,10 +397,6 @@
           <input id="searchInput" class="input" placeholder="Buscar juego..." />
           <select id="platformSelect">
             <option value="all">Todas las plataformas</option>
-            <option value="Xbox">Xbox</option>
-            <option value="PC">PC</option>
-            <option value="PlayStation">PlayStation</option>
-            <option value="Switch">Switch</option>
           </select>
           <div class="segmented" id="statusSegmented" role="tablist" aria-label="Estado">
             <button data-value="active" class="active" role="tab">Activos</button>
@@ -404,6 +406,7 @@
         </div>
         <div class="actions">
           <button class="btn" id="btnAddGame">🎯 Añadir juego</button>
+          <button class="btn" id="btnManagePlatforms">⚙️ Plataformas</button>
         </div>
       </div>
     </section>
@@ -527,12 +530,7 @@
         </div>
         <div class="form-row">
           <label>Plataforma</label>
-          <select id="gamePlatform" class="input">
-            <option value="Xbox">Xbox</option>
-            <option value="PC">PC</option>
-            <option value="PlayStation">PlayStation</option>
-            <option value="Switch">Switch</option>
-          </select>
+          <select id="gamePlatform" class="input"></select>
         </div>
         <div class="form-row">
           <label>Jugadores</label>
@@ -546,6 +544,40 @@
         <div class="form-actions">
           <button class="btn" data-close="#modalGame">Cancelar</button>
           <button class="btn primary" id="gameSave">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Plataformas -->
+  <div class="modal" id="modalPlatforms">
+    <div class="modal-card">
+      <div class="panel-title">
+        <h2>Gestionar plataformas</h2>
+        <button class="btn" data-close="#modalPlatforms">Cerrar</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="actions" style="margin-bottom:6px;">
+          <button class="btn" id="btnNewPlatform">➕ Añadir plataforma</button>
+        </div>
+
+        <div id="platformList" class="list"></div>
+
+        <div class="form-row" style="margin-top:8px;">
+          <label>Nombre</label>
+          <input id="platformName" class="input" placeholder="Ej. PlayStation 5" />
+        </div>
+        <div class="form-row">
+          <label>Icono (emoji opcional)</label>
+          <input id="platformIcon" class="input" placeholder="🎮" maxlength="6" />
+          <div class="hint">Puedes usar cualquier emoji (o dejarlo vacío).</div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn danger" id="platformDelete" style="margin-right:auto; display:none;">🗑 Eliminar</button>
+          <button class="btn" data-close="#modalPlatforms">Cancelar</button>
+          <button class="btn primary" id="platformSave">Guardar</button>
         </div>
       </div>
     </div>
@@ -572,7 +604,7 @@
       selectedPlayers: new Set(),
       filters: { search: '', platform: 'all', status: 'active' },
       ui: { theme: 'light', source: 'default' },
-      editing: { playerId: null, gameId: null }
+      editing: { playerId: null, gameId: null, platformId: null }
     };
 
     // Utils
@@ -592,6 +624,55 @@
       return (parts[0][0] + parts[1][0]).toUpperCase();
     };
     const id = (p='id') => `${p}_${Math.random().toString(36).slice(2,8)}${Date.now().toString(36).slice(-4)}`;
+
+    // Plataformas (dinámicas)
+    const DEFAULT_PLATFORMS = [
+      { id:'pl_xbox',   name:'Xbox',        icon:'🟩' },
+      { id:'pl_pc',     name:'PC',          icon:'💻' },
+      { id:'pl_ps',     name:'PlayStation', icon:'🎮' },
+      { id:'pl_switch', name:'Switch',      icon:'🔺' },
+      { id:'pl_other',  name:'Otro',        icon:'📦' },
+    ];
+
+    function ensurePlatforms(data) {
+      if (!data.platforms) data.platforms = [];
+      const lower = s => String(s || '').trim().toLowerCase();
+      const hasName = name => data.platforms.some(p => lower(p.name) === lower(name));
+      // Semillas por defecto
+      for (const p of DEFAULT_PLATFORMS) {
+        if (!hasName(p.name)) data.platforms.push({ ...p });
+      }
+      // Añadir las que existan en juegos y no estén aún
+      for (const g of (data.games || [])) {
+        if (g.platform && !hasName(g.platform)) {
+          data.platforms.push({ id: id('pl'), name: g.platform, icon: '🎮' });
+        }
+      }
+    }
+    function platformByName(name) {
+      const n = String(name || '').toLowerCase();
+      return state.data.platforms.find(p => p.name.toLowerCase() === n);
+    }
+    function renderPlatformFilterSelect() {
+      const sel = $('#platformSelect');
+      if (!sel) return;
+      const prev = state.filters.platform || sel.value || 'all';
+      sel.innerHTML = '';
+      const optAll = document.createElement('option');
+      optAll.value = 'all';
+      optAll.textContent = 'Todas las plataformas';
+      sel.appendChild(optAll);
+      // opciones
+      for (const p of state.data.platforms
+            .slice()
+            .sort((a,b)=> a.name.localeCompare(b.name, 'es', {sensitivity:'base'}))) {
+        const o = document.createElement('option');
+        o.value = p.name;
+        o.textContent = `${p.icon ? p.icon + ' ' : ''}${p.name}`;
+        sel.appendChild(o);
+      }
+      sel.value = prev === 'all' ? 'all' : prev;
+    }
 
     // Sample data
     function sampleData() {
@@ -616,8 +697,10 @@
         meta: { version: 1, lastUpdated: todayISO(), source: 'default', appVersion: APP_VERSION },
         players: [p1,p2,p3,p4,p5],
         games,
+        platforms: [],
         stats: {}
       };
+      ensurePlatforms(data);
       recomputeStats(data);
       return data;
     }
@@ -684,11 +767,16 @@
       state.data = chosen.data;
       state.ui.source = chosen.source;
 
+      // Asegurar plataformas (para datos antiguos o importados)
+      ensurePlatforms(state.data);
+
       // Si el remoto es más nuevo, sincronizamos a local
       if (chosen.source === 'data.json') {
         saveLocal(structuredClone(state.data), false);
       }
       updateFooter();
+
+      renderPlatformFilterSelect();
       renderAll();
     }
 
@@ -840,11 +928,12 @@ function renderPlayersGrid() {
       for (const g of list) {
         const el = document.createElement('div');
         el.className = 'game-card' + (g.completed ? ' done' : '');
+        const platObj = platformByName(g.platform);
         el.innerHTML = `
           <div class="game-header">
             <div class="game-title">${escapeHTML(g.title)}</div>
             <div class="game-meta">
-              <span class="chip platform">${g.platform}</span>
+              <span class="chip platform">${platObj?.icon ? `${platObj.icon} ` : ''}${g.platform}</span>
               ${g.completed ? '<span class="chip done">Hecho</span>' : ''}
             </div>
           </div>
@@ -918,8 +1007,9 @@ function renderPlayersGrid() {
           const row = document.createElement('div');
           row.className = 'row-item';
           const pct = Math.round((count/total)*100);
+          const pobj = platformByName(plat);
           row.innerHTML = `
-            <div><strong>${plat}</strong> <span class="hint">(${count})</span>
+            <div><strong>${pobj?.icon ? pobj.icon + ' ' : ''}${plat}</strong> <span class="hint">(${count})</span>
               <div class="bar" style="margin-top:6px;"><span style="width:${pct}%"></span></div>
             </div>
             <div class="mono">${pct}%</div>
@@ -1113,36 +1203,36 @@ function renderPlayersGrid() {
     });
 
     $('#playerDelete').addEventListener('click', () => {
-  const pid = state.editing.playerId;
-  const p = playerById(pid);
-  if (!p) return;
+      const pid = state.editing.playerId;
+      const p = playerById(pid);
+      if (!p) return;
 
-  const affected = state.data.games.filter(g => g.players.includes(pid));
-  const willBeEmpty = affected.filter(g => g.players.length === 1).length;
+      const affected = state.data.games.filter(g => g.players.includes(pid));
+      const willBeEmpty = affected.filter(g => g.players.length === 1).length;
 
-  if (!confirm(`¿Eliminar a ${p.name}? Se quitará de ${affected.length} juego(s) y se eliminarán ${willBeEmpty} juego(s) que se quedarían sin jugadores.`)) return;
+      if (!confirm(`¿Eliminar a ${p.name}? Se quitará de ${affected.length} juego(s) y se eliminarán ${willBeEmpty} juego(s) que se quedarían sin jugadores.`)) return;
 
-  // 1) Eliminar jugador
-  state.data.players = state.data.players.filter(x => x.id !== pid);
+      // 1) Eliminar jugador
+      state.data.players = state.data.players.filter(x => x.id !== pid);
 
-  // 2) Limpiar selección si estaba seleccionado
-  state.selectedPlayers.delete(pid);
+      // 2) Limpiar selección si estaba seleccionado
+      state.selectedPlayers.delete(pid);
 
-  // 3) Quitar al jugador de todos los juegos y actualizar fecha
-  for (const g of state.data.games) {
-    if (g.players.includes(pid)) {
-      g.players = g.players.filter(id => id !== pid);
-      g.updatedAt = todayISO();
-    }
-  }
+      // 3) Quitar al jugador de todos los juegos y actualizar fecha
+      for (const g of state.data.games) {
+        if (g.players.includes(pid)) {
+          g.players = g.players.filter(id => id !== pid);
+          g.updatedAt = todayISO();
+        }
+      }
 
-  // 4) Eliminar juegos que se queden sin jugadores
-  state.data.games = state.data.games.filter(g => (g.players || []).length > 0);
+      // 4) Eliminar juegos que se queden sin jugadores
+      state.data.games = state.data.games.filter(g => (g.players || []).length > 0);
 
-  saveLocal(state.data);
-  closeModal('#modalPlayer');
-  renderAll();
-});
+      saveLocal(state.data);
+      closeModal('#modalPlayer');
+      renderAll();
+    });
 
     // CRUD: Juegos
 function openGameModal(gameId=null, preselectedPlayers=null) {
@@ -1174,9 +1264,17 @@ function openGameModal(gameId=null, preselectedPlayers=null) {
     container.appendChild(row);
   }
 
+  // Select de plataformas (dinámico)
+  const platSelect = $('#gamePlatform');
+  platSelect.innerHTML = state.data.platforms
+    .slice()
+    .sort((a,b)=> a.name.localeCompare(b.name,'es',{sensitivity:'base'}))
+    .map(p => `<option value="${p.name}">${p.icon ? p.icon + ' ' : ''}${p.name}</option>`)
+    .join('');
+
   // Campos del juego
   $('#gameTitle').value = g?.title || '';
-  $('#gamePlatform').value = g?.platform || 'Xbox';
+  $('#gamePlatform').value = g?.platform || (state.data.platforms[0]?.name || 'Xbox');
   $('#gameCompleted').checked = Boolean(g?.completed);
   openModal('#modalGame');
 }
@@ -1236,8 +1334,109 @@ function openGameModal(gameId=null, preselectedPlayers=null) {
       renderAll();
     }
 
+    // Gestor de plataformas
+    $('#btnManagePlatforms').addEventListener('click', () => openPlatformsModal());
+    $('#btnNewPlatform').addEventListener('click', () => openPlatformsModal(null));
+    $('#platformSave').addEventListener('click', savePlatform);
+    $('#platformDelete').addEventListener('click', deletePlatform);
+
+    function openPlatformsModal(platformId=null) {
+      state.editing.platformId = platformId;
+      renderPlatformsList();
+      const p = platformId ? state.data.platforms.find(x=>x.id === platformId) : null;
+      $('#platformName').value = p?.name || '';
+      $('#platformIcon').value = p?.icon || '';
+      $('#platformDelete').style.display = p && p.name !== 'Otro' ? 'inline-flex' : 'none';
+      openModal('#modalPlatforms');
+    }
+
+    function renderPlatformsList() {
+      const wrap = $('#platformList');
+      wrap.innerHTML = '';
+      const arr = state.data.platforms
+        .slice()
+        .sort((a,b)=> a.name.localeCompare(b.name,'es',{sensitivity:'base'}));
+      for (const p of arr) {
+        const row = document.createElement('div');
+        row.className = 'row-item';
+        row.innerHTML = `
+          <div><strong>${escapeHTML(p.icon || '')} ${escapeHTML(p.name)}</strong>
+            <div class="hint mono">${p.id}</div>
+          </div>
+          <div class="actions">
+            <button class="btn" data-action="edit" data-id="${p.id}">✏️ Editar</button>
+            <button class="btn danger" data-action="delete" data-id="${p.id}" ${p.name === 'Otro' ? 'disabled' : ''}>🗑 Eliminar</button>
+          </div>
+        `;
+        row.addEventListener('click', (e)=> {
+          const btn = e.target.closest('button'); if (!btn) return;
+          const id = btn.getAttribute('data-id'); const action = btn.getAttribute('data-action');
+          if (action === 'edit') openPlatformsModal(id);
+          if (action === 'delete') { state.editing.platformId = id; deletePlatform(); }
+        });
+        wrap.appendChild(row);
+      }
+    }
+
+    function savePlatform() {
+      const name = $('#platformName').value.trim();
+      const icon = $('#platformIcon').value.trim();
+      if (!name) { alert('El nombre es obligatorio'); return; }
+      const editingId = state.editing.platformId;
+      const dup = state.data.platforms.find(p => p.name.toLowerCase() === name.toLowerCase() && p.id !== editingId);
+      if (dup) { alert('Ya existe una plataforma con ese nombre.'); return; }
+
+      if (editingId) {
+        const p = state.data.platforms.find(x=>x.id === editingId);
+        if (!p) return;
+        const old = p.name;
+        p.name = name; p.icon = icon;
+        // Si cambia el nombre, renombramos en juegos
+        if (old !== name) {
+          for (const g of state.data.games) {
+            if (String(g.platform).toLowerCase() === old.toLowerCase()) {
+              g.platform = name; g.updatedAt = todayISO();
+            }
+          }
+        }
+      } else {
+        state.data.platforms.push({ id: id('pl'), name, icon });
+      }
+
+      saveLocal(state.data);
+      renderPlatformFilterSelect();
+      renderAll();
+      // Limpiar formulario para seguir añadiendo
+      state.editing.platformId = null;
+      openPlatformsModal(null);
+    }
+
+    function deletePlatform() {
+      const pid = state.editing.platformId;
+      const p = state.data.platforms.find(x=>x.id === pid);
+      if (!p) return;
+      if (p.name === 'Otro') { alert('No se puede eliminar "Otro".'); return; }
+      const usedCount = state.data.games.filter(g => String(g.platform).toLowerCase() === p.name.toLowerCase()).length;
+      if (!confirm(`¿Eliminar "${p.name}"? ${usedCount>0 ? `Se reasignarán ${usedCount} juego(s) a "Otro".` : ''}`)) return;
+
+      const other = platformByName('Otro');
+      for (const g of state.data.games) {
+        if (String(g.platform).toLowerCase() === p.name.toLowerCase()) {
+          g.platform = other.name;
+          g.updatedAt = todayISO();
+        }
+      }
+      state.data.platforms = state.data.platforms.filter(x => x.id !== pid);
+
+      saveLocal(state.data);
+      renderPlatformFilterSelect();
+      renderAll();
+      openPlatformsModal(null);
+    }
+
     // Export / Reset
     function exportJSON() {
+      ensurePlatforms(state.data);
       recomputeStats(state.data);
       const blob = new Blob([JSON.stringify(state.data, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
@@ -1277,6 +1476,38 @@ function openGameModal(gameId=null, preselectedPlayers=null) {
         $('#searchInput').focus();
       }
     });
+
+    // Botón "Instalar" (PWA)
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = $('#btnInstall');
+      if (btn) btn.style.display = 'inline-flex';
+    });
+    $('#btnInstall').addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        $('#btnInstall').style.display = 'none';
+      }
+      deferredPrompt = null;
+    });
+    window.addEventListener('appinstalled', () => {
+      console.log('✅ SquadPlay instalada');
+      const btn = $('#btnInstall');
+      if (btn) btn.style.display = 'none';
+    });
+
+    // Service Worker (PWA)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(reg => console.log('SW registrado', reg.scope))
+          .catch(err => console.warn('SW error', err));
+      });
+    }
 
     // Start
     init();
