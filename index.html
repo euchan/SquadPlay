@@ -166,6 +166,37 @@
     outline: 3px solid color-mix(in oklab, var(--accent) 45%, transparent);
     }
 
+    /* Mejor soporte táctil en las fichas */
+.player-chip {
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+/* Botón de menú (editar) en cada jugador */
+.player-chip .chip-menu {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-2);
+  color: var(--muted);
+  box-shadow: var(--shadow-1);
+  cursor: pointer;
+}
+.player-chip .chip-menu:hover {
+  background: var(--card);
+  color: var(--text);
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--border));
+}
+
     /* Check a la derecha cuando está seleccionado */
     .player-chip::after {
     content: '';
@@ -474,6 +505,7 @@
           <div class="hint">El color se usa en el avatar.</div>
         </div>
         <div class="form-actions">
+          <button class="btn danger" id="playerDelete" style="margin-right:auto; display:none;">🗑 Eliminar</button>
           <button class="btn" data-close="#modalPlayer">Cancelar</button>
           <button class="btn primary" id="playerSave">Guardar</button>
         </div>
@@ -675,42 +707,81 @@
       if ($('#dashboard').classList.contains('open')) renderDashboard();
     }
 
-    function renderPlayersGrid() {
-      const wrap = $('#playersGrid');
-      wrap.innerHTML = '';
-      const list = state.data.players;
-      // Orden alfabético
-      list.sort((a,b)=> a.name.localeCompare(b.name,'es',{sensitivity:'base'}));
-      for (const p of list) {
-        const sel = state.selectedPlayers.has(p.id);
-        const el = document.createElement('label');
-        el.className = 'player-chip' + (sel ? ' selected':'');
-        el.innerHTML = `
-          <input type="checkbox" ${sel ? 'checked':''} data-id="${p.id}">
-          <div class="player-avatar" style="background:${p.color}">${shortName(p.name)}</div>
-          <div style="display:grid; gap:2px;">
-            <div class="player-name">${p.name}</div>
-            <div class="muted mono">${p.id}</div>
-          </div>
-        `;
-        el.addEventListener('click', (e) => {
-          const input = el.querySelector('input');
-          // evitar doble toggle si click en input
-          if (e.target.tagName.toLowerCase() !== 'input') input.checked = !input.checked;
-          togglePlayerSelection(p.id, input.checked);
-          el.classList.toggle('selected', input.checked);
-          e.preventDefault();
-        });
-        wrap.appendChild(el);
-      }
-      // Añadir “quick add”
-      const add = document.createElement('button');
-      add.className = 'player-chip';
-      add.style.justifyContent = 'center';
-      add.innerHTML = `➕ <strong>Añadir jugador</strong>`;
-      add.addEventListener('click', ()=> openPlayerModal());
-      wrap.appendChild(add);
+function renderPlayersGrid() {
+  const wrap = $('#playersGrid');
+  wrap.innerHTML = '';
+  const list = state.data.players.slice().sort((a,b)=> a.name.localeCompare(b.name,'es',{sensitivity:'base'}));
+
+  for (const p of list) {
+    const sel = state.selectedPlayers.has(p.id);
+    const el = document.createElement('label');
+    el.className = 'player-chip' + (sel ? ' selected':'');
+    el.innerHTML = `
+      <input type="checkbox" ${sel ? 'checked':''} data-id="${p.id}">
+      <button type="button" class="chip-menu" title="Editar jugador" aria-label="Editar jugador">⋮</button>
+      <div class="player-avatar" style="background:${p.color}">${shortName(p.name)}</div>
+      <div style="display:grid; gap:2px;">
+        <div class="player-name">${p.name}</div>
+        <div class="muted mono">${p.id}</div>
+      </div>
+    `;
+
+    // Long-press para editar (móvil y desktop)
+    let pressTimer = null;
+    let longPressed = false;
+    const startPress = () => {
+      longPressed = false;
+      clearTimeout(pressTimer);
+      pressTimer = setTimeout(() => {
+        longPressed = true;
+        openPlayerModal(p.id);
+      }, 550); // umbral de long-press
+    };
+    const cancelPress = () => { clearTimeout(pressTimer); };
+
+    if (window.PointerEvent) {
+      el.addEventListener('pointerdown', startPress);
+      el.addEventListener('pointerup', cancelPress);
+      el.addEventListener('pointerleave', cancelPress);
+      el.addEventListener('pointercancel', cancelPress);
+    } else {
+      // Fallback para navegadores sin Pointer Events
+      el.addEventListener('touchstart', startPress, { passive: true });
+      el.addEventListener('touchend', cancelPress);
+      el.addEventListener('touchcancel', cancelPress);
+      el.addEventListener('mousedown', startPress);
+      el.addEventListener('mouseup', cancelPress);
+      el.addEventListener('mouseleave', cancelPress);
     }
+
+    // Click normal: alterna selección (si no fue long-press)
+    el.addEventListener('click', (e) => {
+      if (longPressed) { longPressed = false; return; } // no togglear tras long-press
+      if (e.target.closest('.chip-menu')) return;      // el botón ⋮ lo gestiona aparte
+      const input = el.querySelector('input');
+      if (e.target.tagName.toLowerCase() !== 'input') input.checked = !input.checked;
+      togglePlayerSelection(p.id, input.checked);
+      el.classList.toggle('selected', input.checked);
+      e.preventDefault();
+    });
+
+    // Botón ⋮ para abrir editar/eliminar
+    el.querySelector('.chip-menu').addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      openPlayerModal(p.id);
+    });
+
+    wrap.appendChild(el);
+  }
+
+  // Botón rápido "Añadir jugador"
+  const add = document.createElement('button');
+  add.className = 'player-chip';
+  add.style.justifyContent = 'center';
+  add.innerHTML = `➕ <strong>Añadir jugador</strong>`;
+  add.addEventListener('click', ()=> openPlayerModal());
+  wrap.appendChild(add);
+}
 
     function togglePlayerSelection(pid, checked) {
       if (checked) state.selectedPlayers.add(pid);
@@ -1001,7 +1072,7 @@
     $('#btnAddPlayer').addEventListener('click', ()=> openPlayerModal());
     $('#btnAddGame').addEventListener('click', ()=> openGameModal());
     $('#btnExport').addEventListener('click', exportJSON);
-    $('#btnReset').addEventListener('click', resetDemo);
+    $('#btnReset')?.addEventListener('click', resetDemo);
 
     $('#searchInput').addEventListener('input', debounce((e)=>{ state.filters.search = e.target.value; renderGames(); }, 150));
     $('#platformSelect').addEventListener('change', (e)=>{ state.filters.platform = e.target.value; renderGames(); });
@@ -1021,6 +1092,7 @@
       const p = playerId ? playerById(playerId) : null;
       $('#playerName').value = p?.name || '';
       $('#playerColor').value = p?.color || '#0e7c10';
+      $('#playerDelete').style.display = playerId ? 'inline-flex' : 'none';
       openModal('#modalPlayer');
     }
     $('#playerSave').addEventListener('click', () => {
@@ -1039,6 +1111,38 @@
       closeModal('#modalPlayer');
       renderAll();
     });
+
+    $('#playerDelete').addEventListener('click', () => {
+  const pid = state.editing.playerId;
+  const p = playerById(pid);
+  if (!p) return;
+
+  const affected = state.data.games.filter(g => g.players.includes(pid));
+  const willBeEmpty = affected.filter(g => g.players.length === 1).length;
+
+  if (!confirm(`¿Eliminar a ${p.name}? Se quitará de ${affected.length} juego(s) y se eliminarán ${willBeEmpty} juego(s) que se quedarían sin jugadores.`)) return;
+
+  // 1) Eliminar jugador
+  state.data.players = state.data.players.filter(x => x.id !== pid);
+
+  // 2) Limpiar selección si estaba seleccionado
+  state.selectedPlayers.delete(pid);
+
+  // 3) Quitar al jugador de todos los juegos y actualizar fecha
+  for (const g of state.data.games) {
+    if (g.players.includes(pid)) {
+      g.players = g.players.filter(id => id !== pid);
+      g.updatedAt = todayISO();
+    }
+  }
+
+  // 4) Eliminar juegos que se queden sin jugadores
+  state.data.games = state.data.games.filter(g => (g.players || []).length > 0);
+
+  saveLocal(state.data);
+  closeModal('#modalPlayer');
+  renderAll();
+});
 
     // CRUD: Juegos
 function openGameModal(gameId=null, preselectedPlayers=null) {
