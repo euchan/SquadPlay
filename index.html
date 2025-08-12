@@ -1,0 +1,1149 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SquadPlay · Planner de partidas</title>
+  <meta name="description" content="Organiza partidas con tus amigos. Filtra juegos por combinación exacta de jugadores, marca terminados y consulta estadísticas.">
+  <style>
+    :root {
+      --xbox: #107C10;
+      --xbox-2: #2bbf3a;
+      --ok: #2ecc71;
+      --warn: #f39c12;
+      --danger: #e74c3c;
+      --blue: #3da5ff;
+
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-xs: 8px;
+      --shadow-1: 0 6px 20px rgba(0,0,0,0.08);
+      --shadow-2: 0 10px 30px rgba(0,0,0,0.18);
+      --trans: 180ms ease;
+
+      /* Light (default) */
+      --bg: #ffffff;
+      --bg-2: #f6f7f9;
+      --bg-3: #eef1f4;
+      --text: #101217;
+      --muted: #5b6672;
+      --card: #ffffff;
+      --border: #e6eaf0;
+      --chip: #f1f8f2;
+      --chip-text: #0a4f0a;
+
+      --btn-bg: #101217;
+      --btn-text: #ffffff;
+      --accent: var(--xbox);
+      --accent-weak: #dff5e2;
+    }
+    [data-theme="dark"] {
+      --bg: #000000;
+      --bg-2: #0b0d10;
+      --bg-3: #121519;
+      --text: #e8ecf2;
+      --muted: #a7b1bc;
+      --card: #0e1116;
+      --border: #1f252c;
+      --chip: #102114;
+      --chip-text: #b4f0bf;
+
+      --btn-bg: #e8ecf2;
+      --btn-text: #0e1116;
+      --accent: var(--xbox-2);
+      --accent-weak: #08340d;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    * { box-sizing: border-box; }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    header.appbar {
+      position: sticky; top: 0; z-index: 30;
+      backdrop-filter: blur(10px);
+      background: color-mix(in oklab, var(--bg) 88%, transparent);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 12px;
+    }
+    .appbar .row {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex; align-items: center; gap: 10px; justify-content: space-between;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .2px;
+    }
+    .brand .logo {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: radial-gradient(100% 100% at 30% 30%, var(--accent) 0%, #0b5e0c 55%, #063d08 100%);
+      box-shadow: 0 0 20px color-mix(in oklab, var(--accent) 35%, transparent);
+      display: grid; place-items: center; color: white; font-size: 18px;
+    }
+
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      appearance: none; border: 1px solid var(--border);
+      padding: 9px 12px; border-radius: var(--radius-xs);
+      background: var(--card); color: var(--text);
+      display: inline-flex; align-items: center; gap: 8px;
+      cursor: pointer; transition: transform var(--trans), background var(--trans), border-color var(--trans), color var(--trans);
+      box-shadow: var(--shadow-1);
+      font-weight: 600;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn.primary {
+      background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 100%, transparent) 0%, color-mix(in oklab, var(--accent) 72%, transparent) 100%);
+      color: white; border-color: color-mix(in oklab, var(--accent) 70%, var(--border));
+      box-shadow: 0 10px 25px color-mix(in oklab, var(--accent) 30%, transparent);
+    }
+    .btn.ghost { background: var(--bg-2); }
+    .btn.danger { border-color: color-mix(in oklab, var(--danger) 60%, var(--border)); color: var(--danger); }
+    .btn .badge {
+      background: var(--accent-weak); color: var(--chip-text);
+      padding: 2px 6px; border-radius: 999px; font-size: 12px; font-weight: 700;
+    }
+
+    main { max-width: 1100px; margin: 20px auto; padding: 0 12px; }
+    section.block { margin: 18px 0 28px; }
+
+    .panel {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px; box-shadow: var(--shadow-1);
+    }
+    .panel-title {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px; gap: 10px;
+    }
+    h1,h2,h3 { margin: 0; }
+    h1 { font-size: 20px; }
+    h2 { font-size: 18px; }
+    h3 { font-size: 16px; color: var(--muted); font-weight: 700; }
+
+    .players-grid {
+      display: grid; gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    @media (min-width: 720px) {
+      .players-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    }
+
+    .player-chip {
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--card);
+      padding: 10px; display: flex; align-items: center; gap: 10px;
+      cursor: pointer; transition: border-color var(--trans), box-shadow var(--trans), transform var(--trans);
+      user-select: none; box-shadow: var(--shadow-1);
+    }
+    .player-chip:hover { transform: translateY(-1px); }
+    .player-chip input { appearance: none; width: 0; height: 0; position: absolute; }
+    .player-avatar {
+      width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: white; font-weight: 800; letter-spacing: .4px;
+      box-shadow: inset 0 0 24px rgba(255,255,255,0.1);
+    }
+    .player-name { font-weight: 700; }
+    .player-chip .muted { color: var(--muted); font-size: 12px; }
+    .player-chip.selected { border-color: color-mix(in oklab, var(--accent) 50%, var(--border)); box-shadow: 0 10px 24px color-mix(in oklab, var(--accent) 22%, transparent); }
+    .player-chip.selected .player-name { color: var(--accent); }
+
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--chip); color: var(--chip-text);
+      border-radius: 999px; padding: 4px 10px; font-weight: 700; font-size: 12px;
+      border: 1px solid color-mix(in oklab, var(--accent) 20%, var(--border));
+    }
+    .chip.platform { text-transform: uppercase; letter-spacing: .5px; }
+    .chip.done { background: color-mix(in oklab, var(--ok) 18%, transparent); color: #0b7c2d; }
+
+    .toolbar {
+      display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .input, select {
+      background: var(--card); color: var(--text);
+      border: 1px solid var(--border); border-radius: var(--radius-xs);
+      padding: 9px 12px; min-width: 180px; box-shadow: var(--shadow-1);
+    }
+    .segmented {
+      display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden;
+      background: var(--bg-2);
+    }
+    .segmented button {
+      padding: 8px 12px; border: 0; background: transparent; cursor: pointer; font-weight: 700; color: var(--muted);
+    }
+    .segmented button.active { background: var(--card); color: var(--text); }
+
+    .games-grid {
+      display: grid; gap: 12px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 780px) {
+      .games-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px) {
+      .games-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    .game-card {
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--card); box-shadow: var(--shadow-1);
+      padding: 12px; display: grid; gap: 10px; position: relative; overflow: hidden;
+    }
+    .game-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .game-title { font-weight: 800; font-size: 16px; line-height: 1.2; }
+    .game-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .game-players {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .small-avatar {
+      width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; color: #fff; font-size: 12px; font-weight: 800;
+      border: 1px solid rgba(255,255,255,.15);
+    }
+    .game-actions { display: flex; gap: 8px; }
+    .game-card.done::after {
+      content: "TERMINADO";
+      position: absolute; top: 10px; right: -30px;
+      transform: rotate(20deg);
+      background: var(--ok); color: #fff; padding: 4px 24px; font-weight: 900; letter-spacing: .8px;
+      border-radius: 999px; box-shadow: var(--shadow-2);
+      opacity: .85;
+      font-size: 11px;
+    }
+    .empty {
+      text-align: center; color: var(--muted); border: 1px dashed var(--border);
+      padding: 20px; border-radius: var(--radius);
+      background: var(--bg-2);
+    }
+
+    .dashboard {
+      position: fixed; inset: 0; z-index: 50; display: none;
+      background: color-mix(in oklab, var(--bg) 70%, rgba(0,0,0,.4));
+      backdrop-filter: blur(6px);
+      padding: 18px;
+    }
+    .dashboard.open { display: block; }
+    .dash-inner {
+      max-width: 1000px; margin: 0 auto; background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-2);
+    }
+    .dash-grid {
+      display: grid; gap: 12px; grid-template-columns: 1fr;
+    }
+    @media (min-width: 900px) {
+      .dash-grid { grid-template-columns: 1.1fr 1fr; }
+    }
+    .stat-cards { display: grid; gap: 10px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stat {
+      background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px; text-align: center; box-shadow: var(--shadow-1);
+    }
+    .stat .big { font-size: 24px; font-weight: 900; }
+    .bar {
+      background: var(--bg-3); border: 1px solid var(--border);
+      height: 16px; border-radius: 999px; overflow: hidden;
+    }
+    .bar > span {
+      display: block; height: 100%; background: linear-gradient(90deg, var(--accent) 0%, #19b620 100%);
+      width: 0%;
+    }
+    .list { display: grid; gap: 8px; }
+    .row-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 8px 10px;
+    }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    .modal {
+      position: fixed; inset: 0; z-index: 60; display: none;
+      background: rgba(0,0,0,.45); backdrop-filter: blur(4px);
+      padding: 20px;
+    }
+    .modal.open { display: block; }
+    .modal-card {
+      max-width: 560px; margin: 0 auto; background: var(--card);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px; box-shadow: var(--shadow-2);
+    }
+    .form-grid { display: grid; gap: 10px; grid-template-columns: 1fr; }
+    .form-row { display: grid; gap: 8px; }
+    .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
+    .hint { color: var(--muted); font-size: 12px; }
+
+    footer.footer {
+      max-width: 1100px; margin: 20px auto; padding: 0 12px 40px;
+      color: var(--muted); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    }
+    .source-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--bg-2); border: 1px solid var(--border);
+      border-radius: 999px; padding: 6px 10px;
+    }
+
+    .accent {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <header class="appbar">
+    <div class="row">
+      <div class="brand">
+        <div class="logo">🎮</div>
+        <div>
+          <div style="font-size:15px; font-weight:900;">SquadPlay</div>
+          <div class="hint">Planificador de partidas entre amigos</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btnTheme" title="Cambiar tema">🌓 Tema</button>
+        <button class="btn" id="btnDashboard">📊 Dashboard</button>
+        <button class="btn" id="btnReset">🔁 Reset demo</button>
+        <button class="btn primary" id="btnExport">💾 Exportar JSON</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Jugadores -->
+    <section class="block">
+      <div class="panel">
+        <div class="panel-title">
+          <h2>Selecciona jugadores</h2>
+          <div class="actions">
+            <button class="btn ghost" id="btnClearSelection">✖ Limpiar selección</button>
+            <button class="btn" id="btnAddPlayer">➕ Añadir jugador</button>
+          </div>
+        </div>
+        <div id="playersGrid" class="players-grid"></div>
+      </div>
+    </section>
+
+    <!-- Filtros -->
+    <section class="block">
+      <div class="toolbar">
+        <div class="filters">
+          <input id="searchInput" class="input" placeholder="Buscar juego..." />
+          <select id="platformSelect">
+            <option value="all">Todas las plataformas</option>
+            <option value="Xbox">Xbox</option>
+            <option value="PC">PC</option>
+            <option value="PlayStation">PlayStation</option>
+            <option value="Switch">Switch</option>
+          </select>
+          <div class="segmented" id="statusSegmented" role="tablist" aria-label="Estado">
+            <button data-value="active" class="active" role="tab">Activos</button>
+            <button data-value="completed" role="tab">Terminados</button>
+            <button data-value="all" role="tab">Todos</button>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="btnAddGame">🎯 Añadir juego</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Juegos -->
+    <section class="block">
+      <div class="panel">
+        <div class="panel-title">
+          <h2>Juegos</h2>
+          <div class="hint" id="filterHint"></div>
+        </div>
+        <div id="gamesGrid" class="games-grid"></div>
+      </div>
+    </section>
+
+    <!-- Histórico (últimos terminados) -->
+    <section class="block">
+      <div class="panel">
+        <div class="panel-title">
+          <h2>Histórico reciente</h2>
+          <div class="hint">Últimos juegos marcados como terminados</div>
+        </div>
+        <div id="historyList" class="list"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="dashboard" id="dashboard">
+    <div class="dash-inner">
+      <div class="panel-title">
+        <h2>Dashboard de estadísticas</h2>
+        <div class="actions">
+          <span id="dataSourcePill" class="source-pill">📦 Origen: <strong id="dataSourceText" class="mono"></strong></span>
+          <button class="btn" id="btnCloseDashboard">Cerrar</button>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="stat-cards">
+            <div class="stat">
+              <div class="hint">JUEGOS</div>
+              <div class="big" id="statTotalGames">0</div>
+            </div>
+            <div class="stat">
+              <div class="hint">ACTIVOS</div>
+              <div class="big" id="statActiveGames">0</div>
+            </div>
+            <div class="stat">
+              <div class="hint">TERMINADOS</div>
+              <div class="big" id="statCompletedGames">0</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <h3>Distribución por plataforma</h3>
+            <div id="platformBars" class="list"></div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <h3>Completados por mes (últimos 6)</h3>
+            <div id="completedByMonth" class="list"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div style="margin-bottom:12px;">
+            <h3>Top combos (grupos exactos)</h3>
+            <div id="comboList" class="list"></div>
+          </div>
+          <div style="margin-top:12px;">
+            <h3>Ranking por jugador (activos)</h3>
+            <div id="playerRanking" class="list"></div>
+          </div>
+          <div style="margin-top:12px;">
+            <h3>Últimos terminados</h3>
+            <div id="recentCompleted" class="list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Jugador -->
+  <div class="modal" id="modalPlayer">
+    <div class="modal-card">
+      <div class="panel-title">
+        <h2 id="playerModalTitle">Añadir jugador</h2>
+        <button class="btn" data-close="#modalPlayer">Cerrar</button>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Nombre</label>
+          <input id="playerName" class="input" placeholder="Nombre del jugador" />
+        </div>
+        <div class="form-row">
+          <label>Color</label>
+          <input id="playerColor" type="color" class="input" value="#0e7c10" />
+          <div class="hint">El color se usa en el avatar.</div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" data-close="#modalPlayer">Cancelar</button>
+          <button class="btn primary" id="playerSave">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Juego -->
+  <div class="modal" id="modalGame">
+    <div class="modal-card">
+      <div class="panel-title">
+        <h2 id="gameModalTitle">Añadir juego</h2>
+        <button class="btn" data-close="#modalGame">Cerrar</button>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Título</label>
+          <input id="gameTitle" class="input" placeholder="Nombre del juego" />
+        </div>
+        <div class="form-row">
+          <label>Plataforma</label>
+          <select id="gamePlatform" class="input">
+            <option value="Xbox">Xbox</option>
+            <option value="PC">PC</option>
+            <option value="PlayStation">PlayStation</option>
+            <option value="Switch">Switch</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Jugadores</label>
+          <div id="gamePlayersField" class="list"></div>
+          <div class="hint">Se filtra por combinación exacta, así que elegid exactamente quienes lo juegan.</div>
+        </div>
+        <div class="form-row">
+          <label><input type="checkbox" id="gameCompleted" /> Marcar como terminado</label>
+          <div class="hint">Si está marcado, se guardará con fecha de finalización hoy.</div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" data-close="#modalGame">Cancelar</button>
+          <button class="btn primary" id="gameSave">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div>
+      <span class="source-pill">⏱ Última actualización: <strong id="lastUpdated" class="mono"></strong></span>
+    </div>
+    <div class="hint">
+      Consejo: tras editar, usad “Exportar JSON” y subid el data.json al repo para compartirlo con el grupo.
+    </div>
+  </footer>
+
+  <script>
+  (function(){
+    'use strict';
+
+    const STORAGE_KEY = 'squadplay_data_v1';
+    const APP_VERSION = 1;
+
+    const state = {
+      data: null,
+      selectedPlayers: new Set(),
+      filters: { search: '', platform: 'all', status: 'active' },
+      ui: { theme: 'light', source: 'default' },
+      editing: { playerId: null, gameId: null }
+    };
+
+    // Utils
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+    const fmtDate = iso => {
+      if (!iso) return '-';
+      const d = new Date(iso);
+      if (isNaN(d)) return '-';
+      return d.toLocaleString();
+    };
+    const todayISO = () => new Date().toISOString();
+    const shortName = name => {
+      const parts = (name || '').trim().split(/\s+/);
+      if (parts.length === 0) return '';
+      if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    };
+    const id = (p='id') => `${p}_${Math.random().toString(36).slice(2,8)}${Date.now().toString(36).slice(-4)}`;
+
+    // Sample data
+    function sampleData() {
+      const p1 = { id:'p1', name:'Alex', color:'#34a853', createdAt: todayISO(), updatedAt: todayISO() };
+      const p2 = { id:'p2', name:'Bea', color:'#4285f4', createdAt: todayISO(), updatedAt: todayISO() };
+      const p3 = { id:'p3', name:'Carlos', color:'#fbbc05', createdAt: todayISO(), updatedAt: todayISO() };
+      const p4 = { id:'p4', name:'Dani', color:'#ab47bc', createdAt: todayISO(), updatedAt: todayISO() };
+      const p5 = { id:'p5', name:'Eva', color:'#ef5350', createdAt: todayISO(), updatedAt: todayISO() };
+
+      const games = [
+        { id:'g1', title:'Halo Infinite', platform:'Xbox', players:['p1','p2','p3'], completed:false, completedAt:null, addedAt: todayISO(), updatedAt: todayISO() },
+        { id:'g2', title:'Overcooked! 2', platform:'Switch', players:['p2','p4'], completed:true, completedAt: dateOffset(-40), addedAt: dateOffset(-120), updatedAt: dateOffset(-40) },
+        { id:'g3', title:'Fortnite', platform:'PC', players:['p1','p3','p5'], completed:false, completedAt:null, addedAt: dateOffset(-60), updatedAt: dateOffset(-15) },
+        { id:'g4', title:'Rocket League', platform:'Xbox', players:['p1','p2'], completed:true, completedAt: dateOffset(-15), addedAt: dateOffset(-200), updatedAt: dateOffset(-15) },
+        { id:'g5', title:'It Takes Two', platform:'Xbox', players:['p3','p4'], completed:false, completedAt:null, addedAt: dateOffset(-20), updatedAt: dateOffset(-2) },
+        { id:'g6', title:'Sea of Thieves', platform:'Xbox', players:['p1','p2','p3','p4'], completed:false, completedAt:null, addedAt: dateOffset(-5), updatedAt: dateOffset(-1) },
+        { id:'g7', title:'Diablo IV', platform:'PC', players:['p2','p3','p5'], completed:false, completedAt:null, addedAt: dateOffset(-18), updatedAt: dateOffset(-3) },
+        { id:'g8', title:'Minecraft', platform:'Xbox', players:['p1','p4','p5'], completed:false, completedAt:null, addedAt: dateOffset(-100), updatedAt: dateOffset(-3) },
+        { id:'g9', title:'Destiny 2', platform:'PlayStation', players:['p5'], completed:true, completedAt: dateOffset(-75), addedAt: dateOffset(-400), updatedAt: dateOffset(-75) },
+      ];
+      const data = {
+        meta: { version: 1, lastUpdated: todayISO(), source: 'default', appVersion: APP_VERSION },
+        players: [p1,p2,p3,p4,p5],
+        games,
+        stats: {}
+      };
+      recomputeStats(data);
+      return data;
+    }
+    function dateOffset(days) {
+      const ms = days * 24 * 60 * 60 * 1000;
+      return new Date(Date.now() + ms).toISOString();
+    }
+
+    // Storage
+    function loadLocal() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const obj = JSON.parse(raw);
+        return obj;
+      } catch (e) {
+        console.warn('Error leyendo localStorage', e);
+        return null;
+      }
+    }
+    function saveLocal(data, bumpVersion=true) {
+      try {
+        if (bumpVersion) data.meta.version = (data.meta.version ?? 0) + 1;
+        data.meta.lastUpdated = todayISO();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        state.ui.source = 'localStorage';
+        updateFooter();
+      } catch (e) {
+        alert('No se pudo guardar en localStorage (¿espacio lleno?)');
+      }
+    }
+    async function fetchRemoteData() {
+      try {
+        const url = `data.json?t=${Date.now()}`;
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error('No se pudo cargar data.json');
+        const obj = await res.json();
+        obj.meta = obj.meta || {};
+        obj.meta.source = 'data.json';
+        return obj;
+      } catch (e) {
+        console.info('No se encontró o no se pudo leer data.json remoto:', e.message);
+        return null;
+      }
+    }
+    function chooseFresher(local, remote) {
+      const safe = d => d && d.meta && d.meta.lastUpdated ? new Date(d.meta.lastUpdated).getTime() : 0;
+      const l = safe(local), r = safe(remote);
+      if (!local && !remote) return { data: sampleData(), source: 'default' };
+      if (local && !remote) return { data: local, source: 'localStorage' };
+      if (!local && remote) return { data: remote, source: 'data.json' };
+      return (r > l) ? { data: remote, source: 'data.json' } : { data: local, source: 'localStorage' };
+    }
+
+    // App init
+    async function init() {
+      // Theme
+      const savedTheme = localStorage.getItem('squadplay_theme');
+      setTheme(savedTheme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+
+      const local = loadLocal();
+      const remote = await fetchRemoteData();
+      const chosen = chooseFresher(local, remote);
+      state.data = chosen.data;
+      state.ui.source = chosen.source;
+
+      // Si el remoto es más nuevo, sincronizamos a local
+      if (chosen.source === 'data.json') {
+        saveLocal(structuredClone(state.data), false);
+      }
+      updateFooter();
+      renderAll();
+    }
+
+    function setTheme(theme) {
+      state.ui.theme = theme;
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('squadplay_theme', theme);
+    }
+
+    // Rendering
+    function renderAll() {
+      renderPlayersGrid();
+      renderGames();
+      renderHistory();
+      // si abrimos dashboard, actualizarlo
+      if ($('#dashboard').classList.contains('open')) renderDashboard();
+    }
+
+    function renderPlayersGrid() {
+      const wrap = $('#playersGrid');
+      wrap.innerHTML = '';
+      const list = state.data.players;
+      // Orden alfabético
+      list.sort((a,b)=> a.name.localeCompare(b.name,'es',{sensitivity:'base'}));
+      for (const p of list) {
+        const sel = state.selectedPlayers.has(p.id);
+        const el = document.createElement('label');
+        el.className = 'player-chip' + (sel ? ' selected':'');
+        el.innerHTML = `
+          <input type="checkbox" ${sel ? 'checked':''} data-id="${p.id}">
+          <div class="player-avatar" style="background:${p.color}">${shortName(p.name)}</div>
+          <div style="display:grid; gap:2px;">
+            <div class="player-name">${p.name}</div>
+            <div class="muted mono">${p.id}</div>
+          </div>
+        `;
+        el.addEventListener('click', (e) => {
+          const input = el.querySelector('input');
+          // evitar doble toggle si click en input
+          if (e.target.tagName.toLowerCase() !== 'input') input.checked = !input.checked;
+          togglePlayerSelection(p.id, input.checked);
+          e.preventDefault();
+        });
+        wrap.appendChild(el);
+      }
+      // Añadir “quick add”
+      const add = document.createElement('button');
+      add.className = 'player-chip';
+      add.style.justifyContent = 'center';
+      add.innerHTML = `➕ <strong>Añadir jugador</strong>`;
+      add.addEventListener('click', ()=> openPlayerModal());
+      wrap.appendChild(add);
+    }
+
+    function togglePlayerSelection(pid, checked) {
+      if (checked) state.selectedPlayers.add(pid);
+      else state.selectedPlayers.delete(pid);
+      renderGames();
+    }
+
+    function renderGames() {
+      const grid = $('#gamesGrid');
+      const { search, platform, status } = state.filters;
+      const selected = Array.from(state.selectedPlayers);
+
+      let list = state.data.games.slice();
+      // filtros
+      if (search.trim()) {
+        const q = search.trim().toLowerCase();
+        list = list.filter(g => g.title.toLowerCase().includes(q));
+      }
+      if (platform !== 'all') {
+        list = list.filter(g => g.platform === platform);
+      }
+      if (status === 'active') list = list.filter(g => !g.completed);
+      if (status === 'completed') list = list.filter(g => g.completed);
+
+      // filtro por combinación EXACTA de jugadores seleccionados
+      if (selected.length > 0) {
+        const selKey = selected.slice().sort().join('|');
+        list = list.filter(g => (g.players.slice().sort().join('|') === selKey));
+      }
+
+      // Hint filtros
+      const hint = $('#filterHint');
+      if (selected.length === 0) {
+        hint.textContent = 'Sin jugadores seleccionados: se muestran todos los juegos según filtros.';
+      } else {
+        const names = selected.map(pid => playerById(pid)?.name || '¿?').join(' + ');
+        hint.textContent = `Combinación exacta: ${names}`;
+      }
+
+      grid.innerHTML = '';
+      if (list.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.innerHTML = `
+          No hay juegos para esta selección. <br>
+          <button class="btn" style="margin-top:10px;" id="emptyAddGame">➕ Añadir un juego para esta combinación</button>
+        `;
+        grid.appendChild(empty);
+        $('#emptyAddGame')?.addEventListener('click', ()=> openGameModal(null, selected));
+        return;
+      }
+
+      // Orden: activos primero, luego por título
+      list.sort((a,b) => (Number(a.completed) - Number(b.completed)) || a.title.localeCompare(b.title,'es',{sensitivity:'base'}));
+
+      for (const g of list) {
+        const el = document.createElement('div');
+        el.className = 'game-card' + (g.completed ? ' done' : '');
+        el.innerHTML = `
+          <div class="game-header">
+            <div class="game-title">${escapeHTML(g.title)}</div>
+            <div class="game-meta">
+              <span class="chip platform">${g.platform}</span>
+              ${g.completed ? '<span class="chip done">Hecho</span>' : ''}
+            </div>
+          </div>
+          <div class="game-players">
+            ${g.players.map(pid => {
+              const p = playerById(pid);
+              return p ? `<div class="small-avatar" title="${p.name}" style="background:${p.color}">${shortName(p.name)}</div>` : '';
+            }).join('')}
+          </div>
+          <div class="game-actions">
+            <button class="btn ${g.completed?'':'primary'}" data-action="toggle" data-id="${g.id}">${g.completed ? '↩ Reabrir' : '✅ Marcar terminado'}</button>
+            <button class="btn" data-action="edit" data-id="${g.id}">✏️ Editar</button>
+            <button class="btn danger" data-action="delete" data-id="${g.id}">🗑 Eliminar</button>
+          </div>
+          <div class="hint">
+            Añadido: ${fmtDate(g.addedAt)} · Actualizado: ${fmtDate(g.updatedAt)} · ${g.completed ? ('Finalizado: ' + fmtDate(g.completedAt)) : ''}
+          </div>
+        `;
+        el.addEventListener('click', (e) => {
+          const btn = e.target.closest('button');
+          if (!btn) return;
+          const id = btn.getAttribute('data-id');
+          const action = btn.getAttribute('data-action');
+          if (action === 'toggle') toggleGameCompleted(id);
+          if (action === 'edit') openGameModal(id);
+          if (action === 'delete') deleteGame(id);
+        });
+        grid.appendChild(el);
+      }
+    }
+
+    function renderHistory() {
+      const wrap = $('#historyList');
+      const list = state.data.games.filter(g => g.completed && g.completedAt).sort((a,b)=> new Date(b.completedAt)-new Date(a.completedAt)).slice(0,8);
+      wrap.innerHTML = '';
+      if (list.length === 0) {
+        wrap.innerHTML = `<div class="empty">Aún no hay histórico de juegos terminados.</div>`;
+        return;
+      }
+      for (const g of list) {
+        const el = document.createElement('div');
+        el.className = 'row-item';
+        el.innerHTML = `
+          <div>
+            <strong>${escapeHTML(g.title)}</strong>
+            <div class="hint">${g.platform} · ${g.players.map(pid => playerById(pid)?.name).filter(Boolean).join(', ')}</div>
+          </div>
+          <div class="mono">${fmtDate(g.completedAt)}</div>
+        `;
+        wrap.appendChild(el);
+      }
+    }
+
+    function renderDashboard() {
+      const d = state.data;
+      recomputeStats(d); // asegurar coherencia
+      // totales
+      $('#statTotalGames').textContent = d.stats.totals.totalGames;
+      $('#statActiveGames').textContent = d.stats.totals.activeGames;
+      $('#statCompletedGames').textContent = d.stats.totals.completedGames;
+
+      // plataformas
+      const bars = $('#platformBars');
+      bars.innerHTML = '';
+      const total = Math.max(1, d.stats.totals.totalGames);
+      const platforms = Object.entries(d.stats.byPlatform || {});
+      if (platforms.length === 0) {
+        bars.innerHTML = '<div class="empty">Sin datos de plataforma.</div>';
+      } else {
+        for (const [plat, count] of platforms.sort((a,b)=> b[1]-a[1])) {
+          const row = document.createElement('div');
+          row.className = 'row-item';
+          const pct = Math.round((count/total)*100);
+          row.innerHTML = `
+            <div><strong>${plat}</strong> <span class="hint">(${count})</span>
+              <div class="bar" style="margin-top:6px;"><span style="width:${pct}%"></span></div>
+            </div>
+            <div class="mono">${pct}%</div>
+          `;
+          bars.appendChild(row);
+        }
+      }
+
+      // combos
+      const comboList = $('#comboList');
+      comboList.innerHTML = '';
+      const combos = Object.entries(d.stats.combos || {}).sort((a,b)=> b[1]-a[1]).slice(0,10);
+      if (combos.length === 0) {
+        comboList.innerHTML = '<div class="empty">Aún no hay combos.</div>';
+      } else {
+        for (const [key, count] of combos) {
+          const names = key.split('|').map(pid => playerById(pid)?.name).filter(Boolean).join(' + ');
+          const row = document.createElement('div');
+          row.className = 'row-item';
+          row.innerHTML = `
+            <div><strong>${names}</strong></div>
+            <div><span class="chip">${count} juego(s)</span></div>
+          `;
+          comboList.appendChild(row);
+        }
+      }
+
+      // ranking por jugador (activos)
+      const ranking = $('#playerRanking');
+      ranking.innerHTML = '';
+      const rank = Object.entries(d.stats.activeByPlayer || {}).sort((a,b)=> b[1]-a[1]);
+      for (const [pid,count] of rank) {
+        const p = playerById(pid);
+        const row = document.createElement('div');
+        row.className = 'row-item';
+        row.innerHTML = `
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="small-avatar" style="background:${p?.color || '#777'}">${shortName(p?.name || '?')}</div>
+            <strong>${p?.name || pid}</strong>
+          </div>
+          <div><span class="chip">${count} activo(s)</span></div>
+        `;
+        ranking.appendChild(row);
+      }
+
+      // completados por mes
+      const months = $('#completedByMonth');
+      months.innerHTML = '';
+      const last6 = d.stats.completedByMonth || [];
+      if (last6.length === 0) {
+        months.innerHTML = '<div class="empty">Sin completados recientes.</div>';
+      } else {
+        for (const it of last6) {
+          const pct = Math.min(100, (it.count/Math.max(1, d.stats.maxCompletedInMonth))*100);
+          const row = document.createElement('div');
+          row.className = 'row-item';
+          row.innerHTML = `
+            <div><strong>${it.label}</strong>
+              <div class="bar" style="margin-top:6px;"><span style="width:${Math.round(pct)}%"></span></div>
+            </div>
+            <div class="mono">${it.count}</div>
+          `;
+          months.appendChild(row);
+        }
+      }
+
+      // últimos terminados
+      const recent = $('#recentCompleted');
+      recent.innerHTML = '';
+      const last = d.games.filter(g=>g.completed).sort((a,b)=> new Date(b.completedAt)-new Date(a.completedAt)).slice(0,6);
+      if (last.length === 0) {
+        recent.innerHTML = '<div class="empty">Sin datos.</div>';
+      } else {
+        for (const g of last) {
+          const row = document.createElement('div');
+          row.className = 'row-item';
+          row.innerHTML = `
+            <div><strong>${escapeHTML(g.title)}</strong>
+              <div class="hint">${g.platform} · ${g.players.map(pid => playerById(pid)?.name).filter(Boolean).join(', ')}</div>
+            </div>
+            <div class="mono">${fmtDate(g.completedAt)}</div>
+          `;
+          recent.appendChild(row);
+        }
+      }
+
+      // fuente
+      $('#dataSourceText').textContent = state.ui.source;
+    }
+
+    function updateFooter() {
+      $('#lastUpdated').textContent = fmtDate(state.data?.meta?.lastUpdated);
+    }
+
+    // Stats
+    function recomputeStats(data) {
+      const games = data.games || [];
+      const stats = {};
+      stats.totals = {
+        totalGames: games.length,
+        completedGames: games.filter(g=>g.completed).length,
+        activeGames: games.filter(g=>!g.completed).length,
+      };
+      stats.byPlatform = games.reduce((acc,g)=>{ acc[g.platform] = (acc[g.platform]||0)+1; return acc; }, {});
+      // combos exactos: key = players sorted joined
+      stats.combos = {};
+      for (const g of games) {
+        const key = (g.players||[]).slice().sort().join('|');
+        if (!key) continue;
+        stats.combos[key] = (stats.combos[key]||0)+1;
+      }
+      // ranking activos por jugador
+      const actives = games.filter(g=>!g.completed);
+      stats.activeByPlayer = {};
+      for (const g of actives) {
+        for (const pid of (g.players||[])) {
+          stats.activeByPlayer[pid] = (stats.activeByPlayer[pid]||0)+1;
+        }
+      }
+      // completados por mes - últimos 6 meses
+      const now = new Date();
+      const months = [];
+      for (let i=5;i>=0;i--) {
+        const dt = new Date(now.getFullYear(), now.getMonth()-i, 1);
+        const ym = dt.toISOString().slice(0,7);
+        const label = dt.toLocaleDateString(undefined, { month:'short', year:'2-digit' });
+        const count = games.filter(g => g.completedAt && g.completedAt.slice(0,7) === ym).length;
+        months.push({ ym, label, count });
+      }
+      stats.completedByMonth = months;
+      stats.maxCompletedInMonth = Math.max(0, ...months.map(m=>m.count));
+
+      data.stats = stats;
+    }
+
+    // Helpers
+    function playerById(id) { return state.data.players.find(p=>p.id===id); }
+    function gameById(id) { return state.data.games.find(g=>g.id===id); }
+
+    function escapeHTML(s) {
+      return (s||'').replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    // Events: Filters
+    $('#btnTheme').addEventListener('click', () => setTheme(state.ui.theme === 'dark' ? 'light' : 'dark'));
+    $('#btnDashboard').addEventListener('click', () => { $('#dashboard').classList.add('open'); renderDashboard(); });
+    $('#btnCloseDashboard').addEventListener('click', () => { $('#dashboard').classList.remove('open'); });
+
+    $('#btnClearSelection').addEventListener('click', () => { state.selectedPlayers.clear(); renderPlayersGrid(); renderGames(); });
+    $('#btnAddPlayer').addEventListener('click', ()=> openPlayerModal());
+    $('#btnAddGame').addEventListener('click', ()=> openGameModal());
+    $('#btnExport').addEventListener('click', exportJSON);
+    $('#btnReset').addEventListener('click', resetDemo);
+
+    $('#searchInput').addEventListener('input', debounce((e)=>{ state.filters.search = e.target.value; renderGames(); }, 150));
+    $('#platformSelect').addEventListener('change', (e)=>{ state.filters.platform = e.target.value; renderGames(); });
+    $$('#statusSegmented button').forEach(btn => {
+      btn.addEventListener('click', ()=>{
+        $$('#statusSegmented button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        state.filters.status = btn.dataset.value;
+        renderGames();
+      });
+    });
+
+    // CRUD: Jugadores
+    function openPlayerModal(playerId=null) {
+      state.editing.playerId = playerId;
+      $('#playerModalTitle').textContent = playerId ? 'Editar jugador' : 'Añadir jugador';
+      const p = playerId ? playerById(playerId) : null;
+      $('#playerName').value = p?.name || '';
+      $('#playerColor').value = p?.color || '#0e7c10';
+      openModal('#modalPlayer');
+    }
+    $('#playerSave').addEventListener('click', () => {
+      const name = $('#playerName').value.trim();
+      const color = $('#playerColor').value;
+      if (!name) { alert('El nombre es obligatorio'); return; }
+      if (state.editing.playerId) {
+        const p = playerById(state.editing.playerId);
+        if (!p) return;
+        p.name = name; p.color = color; p.updatedAt = todayISO();
+      } else {
+        const p = { id: id('p'), name, color, createdAt: todayISO(), updatedAt: todayISO() };
+        state.data.players.push(p);
+      }
+      saveLocal(state.data);
+      closeModal('#modalPlayer');
+      renderAll();
+    });
+
+    // CRUD: Juegos
+    function openGameModal(gameId=null, preselectedPlayers=null) {
+      state.editing.gameId = gameId;
+      $('#gameModalTitle').textContent = gameId ? 'Editar juego' : 'Añadir juego';
+      // rellenar fieldset de jugadores
+      const container = $('#gamePlayersField');
+      container.innerHTML = '';
+      for (const p of state.data.players.slice().sort((a,b)=> a.name.localeCompare(b.name,'es',{sensitivity:'base'}))) {
+        const row = document.createElement('label');
+        row.className = 'player-chip';
+        row.style.padding = '8px';
+        const checked = gameId ? gameById(gameId)?.players.includes(p.id) :
+              (preselectedPlayers ? preselectedPlayers.includes(p.id) : state.selectedPlayers.has(p.id));
+        row.innerHTML = `
+          <input type="checkbox" data-id="${p.id}" ${checked ? 'checked':''} />
+          <div class="player-avatar" style="width:28px; height:28px; border-radius:8px; background:${p.color}">${shortName(p.name)}</div>
+          <div class="player-name">${p.name}</div>
+        `;
+        container.appendChild(row);
+      }
+      // campos de juego
+      const g = gameId ? gameById(gameId) : null;
+      $('#gameTitle').value = g?.title || '';
+      $('#gamePlatform').value = g?.platform || 'Xbox';
+      $('#gameCompleted').checked = Boolean(g?.completed);
+
+      openModal('#modalGame');
+    }
+    $('#gameSave').addEventListener('click', () => {
+      const title = $('#gameTitle').value.trim();
+      const platform = $('#gamePlatform').value;
+      const completed = $('#gameCompleted').checked;
+      const players = Array.from($('#gamePlayersField').querySelectorAll('input[type="checkbox"]:checked')).map(i => i.dataset.id);
+
+      if (!title) { alert('El título es obligatorio'); return; }
+      if (players.length === 0) { alert('Selecciona al menos un jugador'); return; }
+
+      if (state.editing.gameId) {
+        const g = gameById(state.editing.gameId);
+        if (!g) return;
+        g.title = title;
+        g.platform = platform;
+        g.players = players.slice();
+        if (completed && !g.completed) {
+          g.completed = true;
+          g.completedAt = todayISO();
+        } else if (!completed && g.completed) {
+          g.completed = false;
+          g.completedAt = null;
+        }
+        g.updatedAt = todayISO();
+      } else {
+        const g = {
+          id: id('g'),
+          title, platform, players: players.slice(),
+          completed, completedAt: completed ? todayISO() : null,
+          addedAt: todayISO(), updatedAt: todayISO()
+        };
+        state.data.games.push(g);
+      }
+      saveLocal(state.data);
+      closeModal('#modalGame');
+      renderAll();
+    });
+
+    function deleteGame(gid) {
+      const g = gameById(gid);
+      if (!g) return;
+      if (!confirm(`¿Eliminar "${g.title}"?`)) return;
+      state.data.games = state.data.games.filter(x => x.id !== gid);
+      saveLocal(state.data);
+      renderAll();
+    }
+
+    function toggleGameCompleted(gid) {
+      const g = gameById(gid);
+      if (!g) return;
+      g.completed = !g.completed;
+      g.completedAt = g.completed ? todayISO() : null;
+      g.updatedAt = todayISO();
+      saveLocal(state.data);
+      renderAll();
+    }
+
+    // Export / Reset
+    function exportJSON() {
+      recomputeStats(state.data);
+      const blob = new Blob([JSON.stringify(state.data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'data.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function resetDemo() {
+      if (!confirm('Esto reemplazará tus datos locales por los de demo. ¿Continuar?')) return;
+      state.data = sampleData();
+      saveLocal(state.data);
+      state.selectedPlayers.clear();
+      renderAll();
+    }
+
+    // Modal helpers
+    function openModal(sel) { document.querySelector(sel).classList.add('open'); }
+    function closeModal(sel) { document.querySelector(sel).classList.remove('open'); }
+    $$('[data-close]').forEach(btn => btn.addEventListener('click', () => { closeModal(btn.getAttribute('data-close')); }));
+
+    // Debounce
+    function debounce(fn, ms=200) {
+      let t; return (...args) => { clearTimeout(t); t = setTimeout(()=>fn(...args), ms); };
+    }
+
+    // Global clicks to close dashboard on outside click (optional)
+    $('#dashboard').addEventListener('click', (e)=>{
+      if (e.target.id === 'dashboard') $('#dashboard').classList.remove('open');
+    });
+
+    // Search on slash shortcut
+    document.addEventListener('keydown', (e)=>{
+      if (e.key === '/' && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        $('#searchInput').focus();
+      }
+    });
+
+    // Start
+    init();
+  })();
+  </script>
+</body>
+</html>
