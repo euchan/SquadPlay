@@ -1540,8 +1540,18 @@ function openGameModal(gameId=null, preselectedPlayers=null) {
       });
     }
 
-    // Start
-    init();
+    // Cerrar modales con ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    // Cierra cualquier modal abierto
+    $$('.modal.open').forEach(modal => modal.classList.remove('open'));
+    // Cierra dashboard si está abierto
+    $('#dashboard')?.classList.remove('open');
+  }
+});
+
+// Start
+init();
   })();
   </script>
 </body>
