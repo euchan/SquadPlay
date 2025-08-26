@@ -368,6 +368,12 @@
     /* Solo en móvil: ocultar etiqueta de botones compactos y enfatizar marca */
     @media (max-width: 520px) {
     .btn-compact .btn-label { display: none; }
+    .btn-compact {
+      padding: 6px 8px; /* Padding reducido para botones más pequeños */
+    }
+    .btn-compact .btn-ico {
+      font-size: 16px; /* Icono ligeramente más pequeño */
+    }
 
     /* Marca protagonista */
     .brand .logo { width: 44px; height: 44px; font-size: 22px; }
@@ -385,6 +391,9 @@
       <div class="brand">
         <button class="btn btn-compact" id="btnInstall" title="Instalar" aria-label="Instalar">
             <span class="btn-ico">⬇️</span><span class="btn-label">Instalar</span>
+        </button>
+        <button class="btn btn-compact" id="btnImport" title="Importar JSON" aria-label="Importar JSON">
+            <span class="btn-ico">📂</span><span class="btn-label">Importar JSON</span>
         </button>
         <button class="btn btn-compact" id="btnExport" title="Exportar JSON" aria-label="Exportar JSON">
             <span class="btn-ico">💾</span><span class="btn-label">Exportar JSON</span>
@@ -1192,6 +1201,7 @@ function renderPlayersGrid() {
     $('#btnClearSelection').addEventListener('click', () => { state.selectedPlayers.clear(); renderPlayersGrid(); renderGames(); });
     $('#btnAddPlayer').addEventListener('click', ()=> openPlayerModal());
     $('#btnAddGame').addEventListener('click', ()=> openGameModal());
+    $('#btnImport').addEventListener('click', importJSON);
     $('#btnExport').addEventListener('click', exportJSON);
     $('#btnReset')?.addEventListener('click', resetDemo);
 
@@ -1475,6 +1485,42 @@ function openGameModal(gameId=null, preselectedPlayers=null) {
       a.download = 'data.json';
       a.click();
       URL.revokeObjectURL(a.href);
+    }
+
+    function importJSON() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/json,.json';
+      input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = readerEvent => {
+          try {
+            const content = readerEvent.target.result;
+            const newData = JSON.parse(content);
+            // Basic validation
+            if (!newData || !newData.meta || !newData.players || !newData.games) {
+              throw new Error('El archivo no parece tener el formato correcto de SquadPlay.');
+            }
+            if (confirm('Se importarán los datos del archivo. Esto sobreescribirá los datos locales. ¿Continuar?')) {
+              state.data = newData;
+              ensurePlatforms(state.data);
+              recomputeStats(state.data);
+              saveLocal(state.data);
+              state.selectedPlayers.clear();
+              renderPlatformFilterSelect();
+              renderAll();
+              alert('¡Datos importados correctamente!');
+            }
+          } catch (err) {
+            console.error('Error al importar JSON:', err);
+            alert(`Error al importar el archivo: ${err.message}`);
+          }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
     }
 
     function resetDemo() {
