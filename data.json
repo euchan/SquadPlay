@@ -1,19 +1,10 @@
 {
   "meta": {
-    "version": 15,
-    "lastUpdated": "2025-08-12T10:00:00.000Z",
+    "version": 66,
+    "lastUpdated": "2026-05-23T01:38:46.208Z",
     "source": "data.json",
     "appVersion": 1
   },
-  "platforms": [
-    { "id": "pc", "name": "PC" },
-    { "id": "xbox", "name": "Xbox" },
-    { "id": "ps", "name": "PlayStation" },
-    { "id": "switch", "name": "Nintendo Switch" },
-    { "id": "ps3", "name": "PlayStation 3" },
-    { "id": "ps4", "name": "PlayStation 4" },
-    { "id": "ps5", "name": "PlayStation 5" }
-  ],
   "players": [
     {
       "id": "p1",
@@ -54,35 +45,50 @@
   "games": [
     {
       "id": "g1",
-      "title": "Halo Infinite",
-      "platform": "xbox",
+      "title": "Portal 2",
+      "platform": "Xbox",
       "players": [
         "p1",
-        "p2",
         "p3"
       ],
       "completed": false,
       "completedAt": null,
       "addedAt": "2025-08-12T08:05:53.413Z",
-      "updatedAt": "2025-08-12T08:05:53.413Z"
+      "updatedAt": "2025-08-12T16:46:34.455Z"
     },
     {
       "id": "g2",
-      "title": "Overcooked! 2",
-      "platform": "switch",
+      "title": "Tortugas Ninja",
+      "platform": "Xbox",
       "players": [
-        "p2",
-        "p4"
+        "p1",
+        "p3"
       ],
-      "completed": true,
-      "completedAt": "2025-07-03T08:05:53.413Z",
+      "completed": false,
+      "completedAt": null,
       "addedAt": "2025-04-14T08:05:53.413Z",
-      "updatedAt": "2025-07-03T08:05:53.413Z"
+      "updatedAt": "2025-08-12T16:46:49.292Z"
     },
     {
       "id": "g3",
-      "title": "Fortnite",
-      "platform": "pc",
+      "title": "Battle Field 6",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p2",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-06-13T08:05:53.413Z",
+      "updatedAt": "2025-08-12T16:29:53.269Z"
+    },
+    {
+      "id": "g4",
+      "title": "Dead Island 2",
+      "platform": "Xbox",
       "players": [
         "p1",
         "p3",
@@ -90,55 +96,41 @@
       ],
       "completed": false,
       "completedAt": null,
-      "addedAt": "2025-06-13T08:05:53.413Z",
-      "updatedAt": "2025-07-28T08:05:53.413Z"
-    },
-    {
-      "id": "g4",
-      "title": "Rocket League",
-      "platform": "xbox",
-      "players": [
-        "p1",
-        "p2"
-      ],
-      "completed": true,
-      "completedAt": "2025-07-28T08:05:53.413Z",
       "addedAt": "2025-01-24T08:05:53.413Z",
-      "updatedAt": "2025-07-28T08:05:53.413Z"
+      "updatedAt": "2025-08-12T16:47:08.684Z"
     },
     {
       "id": "g5",
       "title": "Dead Island 2",
-      "platform": "xbox",
+      "platform": "Xbox",
       "players": [
         "p1",
         "p3",
         "p4"
       ],
-      "completed": false,
-      "completedAt": null,
+      "completed": true,
+      "completedAt": "2026-05-23T01:36:09.031Z",
       "addedAt": "2025-07-23T08:05:53.413Z",
-      "updatedAt": "2025-08-12T09:14:17.042Z"
+      "updatedAt": "2026-05-23T01:36:09.041Z"
     },
     {
       "id": "g6",
-      "title": "Sea of Thieves",
-      "platform": "xbox",
+      "title": "Alien",
+      "platform": "PlayStation",
       "players": [
         "p1",
         "p2",
-        "p3",
-        "p4"
+        "p3"
       ],
       "completed": false,
       "completedAt": null,
       "addedAt": "2025-08-07T08:05:53.413Z",
-      "updatedAt": "2025-08-11T08:05:53.413Z"
+      "updatedAt": "2025-08-12T16:47:29.410Z"
     },
     {
       "id": "g7",
       "title": "Diablo V",
-      "platform": "pc",
+      "platform": "Xbox",
       "players": [
         "p1",
         "p3",
@@ -148,12 +140,12 @@
       "completed": false,
       "completedAt": null,
       "addedAt": "2025-07-25T08:05:53.413Z",
-      "updatedAt": "2025-08-12T09:13:04.279Z"
+      "updatedAt": "2025-08-13T18:21:32.489Z"
     },
     {
       "id": "g8",
       "title": "WWZ",
-      "platform": "xbox",
+      "platform": "Xbox",
       "players": [
         "p1",
         "p3",
@@ -167,20 +159,22 @@
     },
     {
       "id": "g9",
-      "title": "Destiny 2",
-      "platform": "ps",
+      "title": "Operation Flashpoint Dragon Rising",
+      "platform": "Xbox",
       "players": [
+        "p1",
+        "p3",
         "p5"
       ],
-      "completed": true,
-      "completedAt": "2025-05-29T08:05:53.413Z",
+      "completed": false,
+      "completedAt": null,
       "addedAt": "2024-07-08T08:05:53.413Z",
-      "updatedAt": "2025-05-29T08:05:53.413Z"
+      "updatedAt": "2025-08-12T16:46:16.333Z"
     },
     {
       "id": "g_9rybmtejn5",
       "title": "Sniper Elite 5",
-      "platform": "xbox",
+      "platform": "Xbox",
       "players": [
         "p1",
         "p3"
@@ -189,7 +183,484 @@
       "completedAt": null,
       "addedAt": "2025-08-12T09:04:06.641Z",
       "updatedAt": "2025-08-12T09:11:15.822Z"
+    },
+    {
+      "id": "g_k9a5w0yzqg",
+      "title": "Broforce",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-12T16:47:54.472Z",
+      "updatedAt": "2025-08-12T16:47:54.472Z"
+    },
+    {
+      "id": "g_w8zzijz6sp",
+      "title": "Broforce",
+      "platform": "PlayStation",
+      "players": [
+        "p1",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-12T16:48:03.625Z",
+      "updatedAt": "2025-08-12T16:48:03.625Z"
+    },
+    {
+      "id": "g_n0bhquzl6d",
+      "title": "Death By Daylight",
+      "platform": "PlayStation",
+      "players": [
+        "p1"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-12T16:48:22.261Z",
+      "updatedAt": "2025-08-12T16:48:22.261Z"
+    },
+    {
+      "id": "g_h2olck04b3",
+      "title": "Dead Island RIP",
+      "platform": "PlayStation",
+      "players": [
+        "p1",
+        "p3",
+        "p4"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-12T16:48:47.055Z",
+      "updatedAt": "2025-08-12T16:48:47.055Z"
+    },
+    {
+      "id": "g_7ku0zu0on2",
+      "title": "Gauntlet",
+      "platform": "PlayStation",
+      "players": [
+        "p1",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-12T16:49:13.406Z",
+      "updatedAt": "2025-08-12T16:49:13.406Z"
+    },
+    {
+      "id": "g_cifk841830",
+      "title": "Hot Wheels",
+      "platform": "PlayStation",
+      "players": [
+        "p1",
+        "p2",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-12T16:49:38.604Z",
+      "updatedAt": "2025-08-12T16:49:48.508Z"
+    },
+    {
+      "id": "g_x9s2bv1lv9",
+      "title": "Hot Wheels 2",
+      "platform": "PlayStation",
+      "players": [
+        "p1",
+        "p2",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-12T16:49:56.470Z",
+      "updatedAt": "2025-08-12T16:49:56.470Z"
+    },
+    {
+      "id": "g_uui7jm21r2",
+      "title": "Predator",
+      "platform": "PlayStation",
+      "players": [
+        "p1",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-12T16:50:17.054Z",
+      "updatedAt": "2025-08-12T16:50:17.054Z"
+    },
+    {
+      "id": "g_jzsia92eop",
+      "title": "BattleFront",
+      "platform": "PlayStation",
+      "players": [
+        "p1",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-12T16:50:33.817Z",
+      "updatedAt": "2025-08-12T16:50:33.817Z"
+    },
+    {
+      "id": "g_rzts302xof",
+      "title": "Tortugas Ninja",
+      "platform": "PlayStation",
+      "players": [
+        "p1"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-12T16:50:58.431Z",
+      "updatedAt": "2025-08-12T16:50:58.431Z"
+    },
+    {
+      "id": "g_tylpqw3crz",
+      "title": "Wildlands",
+      "platform": "PlayStation",
+      "players": [
+        "p1",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "completed": true,
+      "completedAt": "2025-08-12T16:51:17.999Z",
+      "addedAt": "2025-08-12T16:51:17.999Z",
+      "updatedAt": "2025-08-12T16:51:17.999Z"
+    },
+    {
+      "id": "g_puc9fn3i1h",
+      "title": "Wildlands",
+      "platform": "PlayStation",
+      "players": [
+        "p1",
+        "p2",
+        "p3"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-12T16:51:24.821Z",
+      "updatedAt": "2025-08-12T16:51:24.821Z"
+    },
+    {
+      "id": "g_n6p8v03xtk",
+      "title": "BreakPoint - Wildlands",
+      "platform": "PlayStation",
+      "players": [
+        "p1",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-12T16:51:45.272Z",
+      "updatedAt": "2025-08-12T16:51:45.272Z"
+    },
+    {
+      "id": "g_5k3yqx4onc",
+      "title": "Zombie Army 4",
+      "platform": "PlayStation",
+      "players": [
+        "p1",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "completed": true,
+      "completedAt": "2025-08-12T16:52:20.040Z",
+      "addedAt": "2025-08-12T16:52:20.040Z",
+      "updatedAt": "2025-08-12T16:52:20.040Z"
+    },
+    {
+      "id": "g_vtrwac4vwi",
+      "title": "Zombie Army 4",
+      "platform": "PlayStation",
+      "players": [
+        "p1",
+        "p2",
+        "p3",
+        "p4"
+      ],
+      "completed": true,
+      "completedAt": "2025-10-17T23:45:25.360Z",
+      "addedAt": "2025-08-12T16:52:29.442Z",
+      "updatedAt": "2025-10-17T23:45:25.360Z"
+    },
+    {
+      "id": "g_5025i59ps9",
+      "title": "Gears of War 5",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p4"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-16T00:15:09.513Z",
+      "updatedAt": "2025-08-16T00:15:09.513Z"
+    },
+    {
+      "id": "g_jckq7pckac",
+      "title": "Zombie Army 4",
+      "platform": "PlayStation",
+      "players": [
+        "p1",
+        "p2",
+        "p3",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-18T23:40:23.604Z",
+      "updatedAt": "2025-08-18T23:40:23.613Z"
+    },
+    {
+      "id": "g_82a5ee4u2m",
+      "title": "Far Cry 5",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p3"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-08-20T18:01:48.094Z",
+      "updatedAt": "2025-08-20T18:01:48.096Z"
+    },
+    {
+      "id": "g_8qam43z3ui",
+      "title": "Tortugas Ninja",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p2",
+        "p3"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-10-05T11:46:17.274Z",
+      "updatedAt": "2025-10-05T11:46:17.275Z"
+    },
+    {
+      "id": "g_lks74siip0",
+      "title": "Evil West",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p3"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-10-09T09:20:06.180Z",
+      "updatedAt": "2025-10-09T09:20:06.180Z"
+    },
+    {
+      "id": "g_bmj965srde",
+      "title": "Gears of War 5",
+      "platform": "Xbox",
+      "players": [
+        "p2",
+        "p3"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-10-17T21:49:15.794Z",
+      "updatedAt": "2025-10-17T21:49:15.794Z"
+    },
+    {
+      "id": "g_dszt5ps732",
+      "title": "Rainbow Six Extraction",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p2",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-11-02T11:31:41.918Z",
+      "updatedAt": "2025-11-02T11:31:41.919Z"
+    },
+    {
+      "id": "g_267f5dxzm8",
+      "title": "State Of Decay 2",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p2",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-11-02T11:36:12.176Z",
+      "updatedAt": "2025-11-02T11:36:12.176Z"
+    },
+    {
+      "id": "g_ggy0ccz6x2",
+      "title": "Gaunlet",
+      "platform": "PlayStation",
+      "players": [
+        "p1",
+        "p2",
+        "p3",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-11-02T11:37:08.294Z",
+      "updatedAt": "2025-11-02T11:37:08.294Z"
+    },
+    {
+      "id": "g_99zl1o4295",
+      "title": "Rainbow Six Extraction",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p3",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2025-12-22T14:00:25.961Z",
+      "updatedAt": "2025-12-22T14:01:25.944Z"
+    },
+    {
+      "id": "g_lh5i263uzj",
+      "title": "The Division",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2026-01-07T15:50:58.976Z",
+      "updatedAt": "2026-01-07T15:50:58.976Z"
+    },
+    {
+      "id": "g_jjtjjrjrcw",
+      "title": "Rainbow Six Extraction",
+      "platform": "Xbox",
+      "players": [
+        "p1",
+        "p3",
+        "p4"
+      ],
+      "completed": false,
+      "completedAt": null,
+      "addedAt": "2026-05-23T01:38:46.208Z",
+      "updatedAt": "2026-05-23T01:38:46.208Z"
     }
   ],
-  "stats": {}
+  "stats": {
+    "totals": {
+      "totalGames": 37,
+      "completedGames": 4,
+      "activeGames": 33
+    },
+    "byPlatform": {
+      "Xbox": 20,
+      "PlayStation": 17
+    },
+    "combos": {
+      "p1|p3": 5,
+      "p1|p2|p3|p4|p5": 5,
+      "p1|p3|p5": 3,
+      "p1|p3|p4": 3,
+      "p1|p2|p3": 3,
+      "p1|p3|p4|p5": 9,
+      "p1": 2,
+      "p1|p5": 2,
+      "p1|p2|p3|p4": 1,
+      "p1|p4": 1,
+      "p1|p2|p3|p5": 2,
+      "p2|p3": 1
+    },
+    "activeByPlayer": {
+      "p1": 32,
+      "p3": 28,
+      "p2": 11,
+      "p4": 15,
+      "p5": 19
+    },
+    "completedByMonth": [
+      {
+        "ym": "2025-11",
+        "label": "dic 25",
+        "count": 0
+      },
+      {
+        "ym": "2025-12",
+        "label": "ene 26",
+        "count": 0
+      },
+      {
+        "ym": "2026-01",
+        "label": "feb 26",
+        "count": 0
+      },
+      {
+        "ym": "2026-02",
+        "label": "mar 26",
+        "count": 0
+      },
+      {
+        "ym": "2026-03",
+        "label": "abr 26",
+        "count": 0
+      },
+      {
+        "ym": "2026-04",
+        "label": "may 26",
+        "count": 0
+      }
+    ],
+    "maxCompletedInMonth": 0
+  },
+  "platforms": [
+    {
+      "id": "pl_xbox",
+      "name": "Xbox",
+      "icon": "🟩"
+    },
+    {
+      "id": "pl_pc",
+      "name": "PC",
+      "icon": "💻"
+    },
+    {
+      "id": "pl_ps",
+      "name": "PlayStation",
+      "icon": "🎮"
+    },
+    {
+      "id": "pl_switch",
+      "name": "Switch",
+      "icon": "🔺"
+    },
+    {
+      "id": "pl_other",
+      "name": "Otro",
+      "icon": "📦"
+    }
+  ]
 }
